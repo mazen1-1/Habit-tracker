@@ -162,16 +162,16 @@ header{
 .ibtn-lock:hover{color:var(--cyan-d); border-color:#BEE7FB; background:var(--cyan-bg); transform:translateY(-1px)}
 #lockOutBtn:hover{color:var(--red); border-color:#F5C6C6; background:#FEF5F5}
 
-main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:30px 0 70px}
+main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:22px 0 40px}
 .page{display:none}
 .page.on{display:block}
 .page.anim{animation:pagein .38s ease}
 @keyframes pagein{from{opacity:0; transform:translateY(12px)}}
 .page-head{
   display:flex; align-items:flex-end; justify-content:space-between;
-  gap:16px; flex-wrap:wrap; margin-bottom:20px;
+  gap:16px; flex-wrap:wrap; margin-bottom:16px;
 }
-.page-head h1{font-size:26px; font-weight:900; display:flex; align-items:center; gap:10px}
+.page-head h1{font-size:25px; font-weight:900; display:flex; align-items:center; gap:10px}
 .page-head h1::before{content:''; width:8px; height:8px; border-radius:50%; background:var(--cyan); box-shadow:0 0 0 4px rgba(14,165,233,.18)}
 .page-head .sub{color:var(--slate); font-size:13px; font-weight:600; margin-top:3px}
 .month-nav{display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:5px}
@@ -204,7 +204,7 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:30px 0 70px}
   display:flex; align-items:center; gap:16px; flex-wrap:wrap;
   background:var(--cyan-bg); border:1px solid #BEE7FB;
   border-inline-start:4px solid var(--cyan);
-  border-radius:16px; padding:13px 18px; margin-bottom:18px;
+  border-radius:16px; padding:13px 18px; margin-bottom:16px;
   animation:pagein .4s;
 }
 .al-ic{font-size:24px; color:var(--cyan); animation:ring 2.4s ease infinite; transform-origin:top}
@@ -239,14 +239,11 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:30px 0 70px}
 .chart-box{position:relative; height:280px}
 #chartEmpty{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--slate); font-weight:600; font-size:13.5px; gap:8px}
 
-/* ====== رحلة الأشهر (المقارنة الشهرية) ====== */
+/* ====== رحلة الأشهر ====== */
 .months-card{padding:22px 24px; margin-bottom:18px}
 .months-hint{font-size:11px; font-weight:700; color:var(--slate-l); display:flex; align-items:center; gap:5px}
 .months-list{display:flex; flex-direction:column; gap:2px}
-.mrow{
-  display:flex; align-items:center; gap:14px;
-  padding:10px 12px; border-radius:12px; cursor:pointer; transition:.15s;
-}
+.mrow{display:flex; align-items:center; gap:14px; padding:10px 12px; border-radius:12px; cursor:pointer; transition:.15s}
 .mrow:hover{background:#F6FAFD}
 .mrow.sel{background:var(--cyan-bg); outline:1.5px solid #BEE7FB}
 .mname{width:118px; font-size:13px; font-weight:800; flex-shrink:0; display:flex; align-items:center; gap:7px}
@@ -274,63 +271,72 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:30px 0 70px}
 .map-legend{display:flex; gap:13px; flex-wrap:wrap; font-size:11px; font-weight:700; color:var(--slate)}
 .map-legend .d{width:11px; height:11px; border-radius:4px; display:inline-block; margin-inline-end:5px; vertical-align:-1px}
 
-/* ================== شبكة التتبع — مربعات ================== */
+/* ================== شبكة التتبع — مربعات تامة بلا سكرول ================== */
 .track-card{
-  padding:22px 24px; border-radius:24px;
+  padding:18px 20px 14px; border-radius:24px;
   background:linear-gradient(180deg,#FFFFFF,#FBFDFF);
   box-shadow:0 24px 60px -28px rgba(15,23,42,.28), var(--shadow);
 }
-.track-head{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:16px}
+.track-head{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:14px}
 .track-note{font-size:11.5px; color:var(--slate); font-weight:700; display:flex; gap:6px; align-items:center}
 .track-note i{color:var(--cyan); font-size:15px}
-.track-scroll{overflow-x:auto; padding-bottom:4px}
-.track-scroll::-webkit-scrollbar{height:8px}
-.track-scroll::-webkit-scrollbar-thumb{background:#D5DEE9; border-radius:99px}
+/* شبكة بمقاس موحّد يُحسب من الجافاسكربت: --cell هو ضلع المربع */
 .track-grid{
   display:grid;
-  gap:4px;
-  align-items:stretch;
-  width:100%;
+  gap:var(--gap);
+  justify-content:center;
+  align-content:start;
+  --cell:36px; --gap:4px; --label:52px;
 }
-.tg-corner{display:grid; place-items:center; color:var(--cyan); font-size:15px}
-.tg-dow{text-align:center; padding:0 0 7px; line-height:1.1; user-select:none; position:relative}
-.tg-dow b{display:block; font-size:12.5px; font-weight:800; color:var(--slate)}
-.tg-dow span{display:block; font-size:8px; font-weight:700; color:#B6C2D2; margin-top:1px}
+.tg-corner{
+  width:var(--label); height:var(--cell);
+  display:grid; place-items:center; color:var(--cyan);
+}
+.tg-corner i{font-size:clamp(11px, calc(var(--cell)*.42), 18px)}
+.tg-dow{
+  width:var(--cell); height:var(--cell);
+  text-align:center; line-height:1.05; user-select:none; position:relative;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.tg-dow b{font-size:clamp(8px, calc(var(--cell)*.36), 13px); font-weight:800; color:var(--slate)}
+.tg-dow span{font-size:clamp(6px, calc(var(--cell)*.22), 8.5px); font-weight:700; color:#B6C2D2}
 .tg-dow.future b, .tg-dow.neutral b{color:#C3CEDC}
 .tg-dow.today b{color:var(--cyan-d)}
 .tg-dow.today::after{
-  content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%);
-  width:14px; height:3px; border-radius:99px; background:var(--cyan);
+  content:''; position:absolute; bottom:-1px; left:50%; transform:translateX(-50%);
+  width:45%; height:2.5px; border-radius:99px; background:var(--cyan);
 }
 .tg-label{
+  width:var(--label); height:var(--cell);
   display:grid; place-items:center;
-  background:#F6F9FC; border-radius:10px;
+  background:#F6F9FC; border-radius:calc(var(--cell)*.28);
   cursor:context-menu; transition:.18s;
 }
-.tg-label .h-ic{width:30px; height:30px; font-size:16px; border-radius:9px; background:transparent}
-.tg-label:hover{background:var(--cyan); transform:scale(1.06); z-index:2}
-.tg-label:hover .h-ic{color:#fff}
+.tg-label i{font-size:clamp(13px, calc(var(--cell)*.52), 22px); color:#334155; transition:color .18s}
+.tg-label:hover{background:var(--cyan); transform:scale(1.08); z-index:2}
+.tg-label:hover i{color:#fff}
+/* المربع: العرض والارتفاع مفروضان بنفس قيمة --cell */
 .tg-cell{
-  aspect-ratio:1; width:100%;
-  border-radius:9px;
+  width:var(--cell); height:var(--cell);
+  border-radius:calc(var(--cell)*.24);
   display:grid; place-items:center;
-  font-size:13px; user-select:none; position:relative;
+  position:relative; user-select:none;
   transition:transform .15s, background .15s, box-shadow .15s;
   -webkit-touch-callout:none;
 }
-.tg-cell i{pointer-events:none}
+.tg-cell i{pointer-events:none; font-size:calc(var(--cell)*.44)}
 .tg-cell.empty{cursor:pointer; background:#F1F5F9}
-.tg-cell.empty:hover{background:#DFF1FC; transform:scale(1.16); z-index:2; box-shadow:0 8px 16px -6px rgba(14,165,233,.4)}
+.tg-cell.empty:hover{background:#DFF1FC; transform:scale(1.14); z-index:2; box-shadow:0 6px 14px -6px rgba(14,165,233,.4)}
 .tg-cell.empty.today{background:#E0F3FD}
-.tg-cell.done{cursor:pointer; background:var(--cyan); color:#fff; box-shadow:0 6px 14px -6px rgba(14,165,233,.55)}
-.tg-cell.done:hover{transform:scale(1.16); z-index:2; background:#00A2E8}
-.tg-cell.miss{cursor:pointer; background:var(--ink); color:#fff; box-shadow:0 6px 14px -6px rgba(30,30,36,.5)}
-.tg-cell.miss:hover{transform:scale(1.16); z-index:2; background:#33333B}
+.tg-cell.done{cursor:pointer; background:var(--cyan); color:#fff; box-shadow:0 5px 12px -5px rgba(14,165,233,.55)}
+.tg-cell.done:hover{transform:scale(1.14); z-index:2; background:#00A2E8}
+.tg-cell.miss{cursor:pointer; background:var(--ink); color:#fff; box-shadow:0 5px 12px -5px rgba(30,30,36,.5)}
+.tg-cell.miss:hover{transform:scale(1.14); z-index:2; background:#33333B}
 .tg-cell.neutral{background:#EDF1F6}
 .tg-cell.future{background:#F6F8FB}
-.note-dot{position:absolute; top:4px; inset-inline-start:4px; width:5.5px; height:5.5px; border-radius:50%; background:var(--cyan)}
+.note-dot{position:absolute; top:9%; inset-inline-start:9%; width:14%; aspect-ratio:1; border-radius:50%; background:var(--cyan)}
 .tg-cell.done .note-dot, .tg-cell.miss .note-dot{background:#fff}
-.neu-dot{display:inline-block; width:5px; height:5px; border-radius:50%; background:#C4CFDB}
+.neu-dot{width:16%; aspect-ratio:1; border-radius:50%; background:#C4CFDB}
 .tg-cell.pop{animation:cellpop .3s}
 @keyframes cellpop{40%{transform:scale(.76)}}
 .tg-cell.flash, .tg-dow.flash, .tg-sum.flash{animation:colflash 1.5s ease}
@@ -339,18 +345,16 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:30px 0 70px}
   100%{box-shadow:inset 0 0 0 0 rgba(0,0,0,0)}
 }
 .tg-sum{
-  height:22px; border-radius:7px;
+  width:var(--cell); height:calc(var(--cell)*.5);
+  border-radius:calc(var(--cell)*.16);
   display:grid; place-items:center;
-  font-size:10px; font-weight:800; background:#F6F8FB; color:var(--slate);
+  font-size:clamp(7px, calc(var(--cell)*.3), 11px); font-weight:800;
+  background:#F6F8FB; color:var(--slate);
 }
 .tg-sum.f{background:var(--cyan-bg); color:var(--cyan-d)}
 .tg-sum.p{background:#F1F5F9; color:var(--slate)}
 .tg-sum.e{background:#F6F8FB; color:#C4CFDB}
 .tg-sum.n{background:transparent; color:transparent}
-@media (max-width:900px){
-  .track-grid{min-width:760px; gap:3px}
-  .track-scroll{overflow-x:auto}
-}
 .empty{display:flex; flex-direction:column; align-items:center; gap:12px; padding:56px 20px; text-align:center}
 .empty i{font-size:42px; color:#C9D4E0}
 .empty p{color:var(--slate); font-weight:600; font-size:14px; max-width:340px}
@@ -401,6 +405,11 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
 }
 .ibtn.edit:hover{border-color:var(--cyan); color:var(--cyan); background:var(--cyan-bg)}
 .ibtn.del:hover{border-color:#F5C6C6; color:var(--red); background:#FEF5F5}
+.h-ic{
+  display:inline-grid; place-items:center; width:38px; height:38px;
+  border-radius:11px; background:#F1F5F9; color:#334155; font-size:19px; transition:.18s; flex-shrink:0;
+}
+.h-ic.xl{width:64px; height:64px; border-radius:18px; font-size:32px; margin-bottom:10px}
 
 /* ================== الأزرار ================== */
 .btn{
@@ -447,11 +456,6 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
 .pill.ok{background:var(--cyan-bg); color:var(--cyan-d)}
 .pill.bad{background:#F1F3F7; color:var(--ink)}
 .h-mini{display:flex; align-items:center; gap:9px; font-size:13px; font-weight:800}
-.h-ic{
-  display:inline-grid; place-items:center; width:38px; height:38px;
-  border-radius:11px; background:#F1F5F9; color:#334155; font-size:19px; transition:.18s;
-}
-.h-ic.xl{width:64px; height:64px; border-radius:18px; font-size:32px; margin-bottom:10px}
 .hb-pop{text-align:center}
 .hb-stat{background:#F8FAFC; border-radius:14px; padding:15px 17px; margin-top:14px; text-align:start}
 .hb-row{display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--slate); margin-bottom:9px}
@@ -512,6 +516,7 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
   .h-meta small{display:none}
   .mdelta{width:auto}
   .mname{width:92px}
+  .track-card{padding:12px 10px 10px}
 }
 </style>
 </head>
@@ -655,9 +660,7 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
           </div>
           <span class="track-note"><i class="ph ph-hand-tap"></i>نقرة = تبديل الحالة · كليك يمين (أو ضغطة مطوّلة) = الخيارات والملاحظات</span>
         </div>
-        <div class="track-scroll" id="trackScroll">
-          <div class="track-grid" id="trkGrid"></div>
-        </div>
+        <div class="track-grid" id="trkGrid"></div>
         <div class="empty" id="trkEmpty" hidden>
           <i class="ph ph-sparkle"></i>
           <p>لا توجد عادات بعد. أضف عادتك الأولى من لوحة التحكم لتبدأ رحلة الالتزام.</p>
@@ -789,7 +792,6 @@ const PASSWORD = 'mazen1.1';
 const ICONS = ['dumbbell','book-open','drop','moon-stars','code','heartbeat','brain','plant','sun','pen-nib',
                'bicycle','bowl-food','coffee','timer','medal','music-notes','person-simple-walk','shield-check',
                'lightbulb','target','flame','gauge','puzzle-piece','chat-circle-text'];
-/* العادات الافتراضية — من قائمتك */
 const DEFAULT_HABITS = [
   {name:'الصلاة في المسجد',          desc:'صلاة المواقيت الخمس دائماً في المسجد.', icon:'person-simple-walk'},
   {name:'الصلاة على النبي (500 مرة)', desc:'الصلاة على محمد «صلى الله عليه وسلم» 500 مرة يومياً.', icon:'target'},
@@ -799,7 +801,6 @@ const DEFAULT_HABITS = [
   {name:'التوقف',                    desc:'', icon:'shield-check'},
   {name:'تمرين حسبية',               desc:'عمل يومياً تمرين «طبل» للحساب — تكرار عدة مرات ومنتظم.', icon:'heartbeat'},
 ];
-/* للترحيل التلقائي من القائمة الافتراضية القديمة مع الحفاظ على العلامات */
 const OLD_DEFAULTS = ['قراءة ٢٠ صفحة','تمرين رياضي','شرب ٨ أكواب ماء','نوم مبكر','تعلّم وبرمجة'];
 
 let habits = [], records = {}, startDateD = null, authed = false;
@@ -831,7 +832,6 @@ function seed(){
   records = {};
   save();
 }
-/* إذا كانت العادات المخزنة هي الافتراضية القديمة: استبدلها بالجديدة مع الاحتفاظ بالمعرّفات والعلامات */
 function migrate(){
   if(habits.length === OLD_DEFAULTS.length && habits.every((h,i) => h.name === OLD_DEFAULTS[i])){
     DEFAULT_HABITS.forEach((d,i) => Object.assign(habits[i], d));
@@ -888,7 +888,6 @@ function habitPct(id){
   for(const key in records){ const v = records[key][id]; if(v){ v.s === 'done' ? done++ : miss++; } }
   return (done + miss) ? Math.round(done / (done + miss) * 100) : null;
 }
-/* سلسلة النسب الشهرية من شهر البداية حتى الشهر الحالي */
 function monthlySeries(){
   const out = [];
   const cur = new Date(startDateD.getFullYear(), startDateD.getMonth(), 1);
@@ -921,7 +920,6 @@ function go(p){
   if(p === 'admin')     renderAdmin();
 }
  $$('.tab').forEach(b => b.addEventListener('click', () => go(b.dataset.page)));
-addEventListener('resize', moveInd);
 
 function updateMonthNav(){
   const startIdx = startDateD.getFullYear()*12 + startDateD.getMonth();
@@ -1022,7 +1020,7 @@ function renderAlert(){
 });
  $('#alGo').addEventListener('click', () => focusDate(today()));
 
-/* ====== رحلة الأشهر: مقارنة كل شهر بما قبله ====== */
+/* ====== رحلة الأشهر ====== */
 function renderMonths(){
   const list = $('#monthsList');
   if(!habits.length){ list.innerHTML = '<p class="mempty">أضف عاداتك أولاً ليبدأ سجل الأشهر بالتراكم.</p>'; return; }
@@ -1043,7 +1041,6 @@ function renderMonths(){
       ${delta}
     </div>`;
   }).join('');
-  requestAnimationFrame(() => $$('#monthsList .mbar span').forEach(s => s.style.width = s.style.width));
 }
  $('#monthsList').addEventListener('click', e => {
   const r = e.target.closest('.mrow'); if(!r) return;
@@ -1105,7 +1102,7 @@ function renderChart(){
   });
 }
 
-/* ==================== شبكة التتبع — مربعات بلا سكرول ==================== */
+/* ==================== شبكة التتبع — مربعات بحساب دقيق ==================== */
 function cellInner(rec, st){
   const dot = rec && rec.n ? '<span class="note-dot"></span>' : '';
   let mark = '';
@@ -1133,24 +1130,41 @@ function refreshSum(key){
   td.className = `tg-sum ${cls}`;
   td.textContent = txt;
 }
+
+/* حساب ضلع المربع: (العرض المتاح − عمود الأيقونات − الفجوات) ÷ عدد الأيام،
+   مع سقف إضافي من ارتفاع الشاشة حتى يبقى الشهر كاملاً ظاهراً دون تمرير رأسي */
+function computeCellSize(days){
+  const grid = $('#trkGrid');
+  const availW = grid.parentElement.clientWidth || grid.clientWidth || 1100;
+  const label = 52, gap = 4;
+  let byW = Math.floor((availW - label - gap * (days + 1)) / days);
+  const rows = habits.length + 1; // صفوف العادات + صف الترويسة
+  const chrome = 320;             // الهيدر + العنوان + الترويسة العلوية للبطاقة
+  const availH = Math.max(380, window.innerHeight - chrome);
+  const byH = Math.floor((availH - rows * gap) / (rows + 0.7)); // +0.7 لصف الملخص
+  return Math.max(16, Math.min(byW, byH, 58));
+}
 function renderTracker(){
   hideTip();
   $('#trkMonth').textContent = monthName(view.y, view.m);
   updateMonthNav();
-  const grid = $('#trkGrid'), head = $('#trackHead'), scroll = $('#trackScroll'), emptyEl = $('#trkEmpty');
-  if(!habits.length){ head.hidden = true; scroll.hidden = true; emptyEl.hidden = false; return; }
-  head.hidden = false; scroll.hidden = false; emptyEl.hidden = true;
+  const grid = $('#trkGrid'), head = $('#trackHead'), emptyEl = $('#trkEmpty');
+  if(!habits.length){ head.hidden = true; grid.hidden = true; emptyEl.hidden = false; return; }
+  head.hidden = false; grid.hidden = false; emptyEl.hidden = true;
 
   const last = monthDays(view.y, view.m), tKey = fmtKey(today());
-  grid.style.gridTemplateColumns = `56px repeat(${last}, minmax(0, 1fr))`;
+  const cell = computeCellSize(last);
+  grid.style.setProperty('--cell', cell + 'px');
+  grid.style.setProperty('--gap', cell >= 30 ? '4px' : '3px');
+  grid.style.gridTemplateColumns = `var(--label) repeat(${last}, var(--cell))`;
 
-  let html = '<div class="tg-corner" data-tip="أيقونة العادة"><i class="ph-fill ph-calendar-days"></i></div>';
+  let html = `<div class="tg-corner" data-tip="أيقونة العادة"><i class="ph-fill ph-calendar-days"></i></div>`;
   for(let d = 1; d <= last; d++){
     const dt = new Date(view.y, view.m, d), key = fmtKey(dt), st = keyStatus(key);
     html += `<div class="tg-dow ${st} ${key === tKey ? 'today' : ''}" data-tip="${dateAr(dt)}"><b>${arNum(d)}</b><span>${narrowWd.format(dt)}</span></div>`;
   }
   habits.forEach(h => {
-    html += `<div class="tg-label" data-habit="${h.id}" data-tip="${esc(h.name)}"><span class="h-ic"><i class="ph ph-${h.icon}"></i></span></div>`;
+    html += `<div class="tg-label" data-habit="${h.id}" data-tip="${esc(h.name)}"><i class="ph ph-${h.icon}"></i></div>`;
     for(let d = 1; d <= last; d++){
       const key = fmtKey(new Date(view.y, view.m, d)), st = keyStatus(key);
       const rec = (records[key] || {})[h.id];
@@ -1158,7 +1172,7 @@ function renderTracker(){
       html += `<div class="tg-cell ${cls} ${key === tKey ? 'today' : ''}" data-day="${d}" data-key="${key}" data-habit="${h.id}">${cellInner(rec, st)}</div>`;
     }
   });
-  html += '<div class="tg-corner" data-tip="نسبة إنجاز كل يوم"><i class="ph-fill ph-percent"></i></div>';
+  html += `<div class="tg-corner" data-tip="نسبة إنجاز كل يوم"><i class="ph-fill ph-percent"></i></div>`;
   for(let d = 1; d <= last; d++){
     const key = fmtKey(new Date(view.y, view.m, d)), st = keyStatus(key), s = dayStats(key);
     let cls = 'n', txt = '';
@@ -1173,9 +1187,6 @@ function renderTracker(){
   if(pendingFocusDay != null){
     const d = pendingFocusDay; pendingFocusDay = null;
     requestAnimationFrame(() => {
-      const cell = grid.querySelector(`.tg-cell[data-day="${d}"]`);
-      if(!cell) return;
-      cell.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
       $$(`#trkGrid [data-day="${d}"]`).forEach(el => { el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1600); });
     });
   }
@@ -1199,9 +1210,9 @@ function cycleCell(el){
 }
 
 /* --- أحداث الشبكة --- */
-const trackScroll = $('#trackScroll');
+const trkGrid = $('#trkGrid');
 let lpTimer = null, lpFired = false;
-trackScroll.addEventListener('click', e => {
+trkGrid.addEventListener('click', e => {
   if(lpFired){ e.stopImmediatePropagation(); lpFired = false; return; }
   const cell = e.target.closest('.tg-cell');
   if(cell) cycleCell(cell);
@@ -1210,19 +1221,19 @@ trackScroll.addEventListener('click', e => {
     if(lbl){ const h = habitById(lbl.dataset.habit); if(h) habitPopup(h.id); }
   }
 });
-trackScroll.addEventListener('contextmenu', e => {
+trkGrid.addEventListener('contextmenu', e => {
   const cell = e.target.closest('.tg-cell');
   const lbl = e.target.closest('.tg-label');
   if(cell){ e.preventDefault(); openCellMenu({ clientX: e.clientX, clientY: e.clientY }, cell); }
   else if(lbl){ e.preventDefault(); const h = habitById(lbl.dataset.habit); if(h) habitPopup(h.id); }
 });
-trackScroll.addEventListener('touchstart', e => {
+trkGrid.addEventListener('touchstart', e => {
   const cell = e.target.closest('.tg-cell'); if(!cell) return;
   lpFired = false;
   const t = e.touches[0];
   lpTimer = setTimeout(() => { lpFired = true; openCellMenu({ clientX: t.clientX, clientY: t.clientY }, cell); }, 480);
 }, { passive: true });
-['touchend','touchmove','touchcancel'].forEach(ev => trackScroll.addEventListener(ev, () => clearTimeout(lpTimer), { passive: true }));
+['touchend','touchmove','touchcancel'].forEach(ev => trkGrid.addEventListener(ev, () => clearTimeout(lpTimer), { passive: true }));
 
 function openCellMenu(pos, el){
   const key = el.dataset.key, hid = el.dataset.habit;
@@ -1524,6 +1535,13 @@ if(authed){
 }else{
   setTimeout(() => $('#pwInput').focus(), 300);
 }
+/* إعادة رسم الشبكة عند تغيير حجم النافذة حتى تبقى المربعات تامة */
+let rsTimer = null;
+addEventListener('resize', () => {
+  moveInd();
+  clearTimeout(rsTimer);
+  rsTimer = setTimeout(() => { if(currentPage === 'tracker' && habits.length) renderTracker(); }, 130);
+});
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(moveInd);
 </script>
 </body>
