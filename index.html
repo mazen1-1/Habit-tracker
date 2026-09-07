@@ -192,7 +192,6 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
 .card-head h2{font-size:15.5px; font-weight:800}
 .card-head h2 i{color:var(--cyan); margin-inline-end:6px}
 
-/* مربعات الدليل: مقفولة من كل الجهات */
 .legend{display:flex; gap:14px; flex-wrap:wrap; align-items:center}
 .lg{display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--slate)}
 .sw{
@@ -205,7 +204,7 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
 .sw.miss{background:var(--ink)}
 .sw.empty{background:#EDF2F7}
 .sw.neutral{background:#E7EDF3; outline:1.5px dashed #C6D2DF; outline-offset:-2px}
-.sw.today{background:#fff; box-shadow:inset 0 0 0 2px #7DD3FC}
+.sw.today{background:#fff; box-shadow:inset 0 0 0 2px #38BDF8}
 
 /* ================== لوحة الإنجاز ================== */
 .alert-bar{
@@ -279,9 +278,9 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
 .map-legend{display:flex; gap:13px; flex-wrap:wrap; font-size:11px; font-weight:700; color:var(--slate)}
 .map-legend .d{width:11px; height:11px; border-radius:4px; display:inline-block; margin-inline-end:5px; vertical-align:-1px}
 
-/* ================== شبكة التتبع ==================
-   بنية جديدة: صفوف flex مستقلة (لا Grid واحد) + مقاسات inline بالبكسل
-   + حلقة بيضاء حول كل خلية تمنع اندماج الأعمدة بصرياً نهائياً */
+/* ================== شبكة التتبع — جدول <table> كلاسيكي ==================
+   محرك الجداول يفرض أبعاد الخلية بنفسه: لا تمدد ممكن بنيوياً.
+   الفواصل بين المربعات مسافات بيضاء حقيقية عبر border-spacing. */
 .track-card{
   padding:14px 18px 12px; border-radius:24px;
   background:linear-gradient(180deg,#FFFFFF,#FBFDFF);
@@ -290,71 +289,79 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
 .track-head{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:10px}
 .track-note{font-size:11.5px; color:var(--slate); font-weight:700; display:flex; gap:6px; align-items:center}
 .track-note i{color:var(--cyan); font-size:15px}
-.track-scroll{overflow-x:auto; overflow-y:hidden; padding:3px}
+.track-scroll{overflow-x:auto; overflow-y:hidden; padding:2px}
 .track-scroll::-webkit-scrollbar{height:8px}
 .track-scroll::-webkit-scrollbar-thumb{background:#D5DEE9; border-radius:99px}
 .track-scroll::-webkit-scrollbar-track{background:transparent}
-.track-grid{display:flex; flex-direction:column; align-items:center; gap:5px; --cell:34px}
-.tg-row{display:flex; gap:5px; flex:none}
-.tg-row>*{flex:none}
-.tg-corner{display:grid; place-items:center; color:var(--cyan)}
-.tg-dow{
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; line-height:1.02; user-select:none; position:relative; overflow:hidden;
+.tg-table{
+  border-collapse:separate;
+  border-spacing:5px;      /* الفجوة البيضاء الحقيقية بين المربعات */
+  margin-inline:auto;      /* توسيط الشبكة */
+  table-layout:fixed;      /* عرض الأعمدة مقفول من colgroup */
+  --cell:34px;
 }
-.tg-dow b{font-size:clamp(8px, calc(var(--cell)*.36), 13px); font-weight:800; color:var(--slate)}
-.tg-dow span{font-size:clamp(6px, calc(var(--cell)*.24), 9px); font-weight:700; color:#B6C2D2}
+.tg-table th, .tg-table td{
+  padding:0;
+  vertical-align:middle;
+  text-align:center;
+  line-height:1.05;
+}
+.tg-hd{font-weight:normal; background:transparent}
+/* ترويسة الأيام */
+.tg-dow{user-select:none; position:relative; overflow:hidden}
+.tg-dow b{display:block; font-weight:800; font-size:calc(var(--cell)*.36); color:var(--slate)}
+.tg-dow span{display:block; font-weight:700; font-size:calc(var(--cell)*.24); color:#B6C2D2}
 .tg-dow.future b, .tg-dow.neutral b{color:#C3CEDC}
-.tg-dow.today{background:var(--cyan-bg); box-shadow:0 0 0 2px #FFFFFF, inset 0 0 0 1.5px #BAE6FD}
+.tg-dow.today{background:var(--cyan-bg); border-radius:calc(var(--cell)*.24)}
 .tg-dow.today b{color:var(--cyan-d)}
 .tg-dow.today span{color:var(--cyan)}
+/* عمود أيقونات العادات */
 .tg-label{
-  display:grid; place-items:center;
-  background:#F6F9FC; cursor:context-menu; transition:.18s; overflow:hidden;
+  background:#F6F9FC;
+  border-radius:calc(var(--cell)*.28);
+  cursor:context-menu; transition:.18s; overflow:hidden;
 }
-.tg-label i{color:#334155; transition:color .18s}
-.tg-label:hover{background:var(--cyan); transform:scale(1.06); z-index:2}
+.tg-label i{display:block; font-size:calc(var(--cell)*.52); color:#334155; transition:color .18s}
+.tg-label:hover{background:var(--cyan)}
 .tg-label:hover i{color:#fff}
-/* الخلية: مقاس inline من الجافاسكربت + حلقة بيضاء فاصلة تمنع اندماج الأعمدة */
+/* خلية اليوم: عرضها وارتفاعها مفروضان من الجدول + colgroup — مربع حتمي */
 .tg-cell{
-  display:grid; place-items:center;
   position:relative; user-select:none; overflow:hidden;
+  border-radius:calc(var(--cell)*.24);
   transition:transform .15s, background .15s, box-shadow .15s;
   -webkit-touch-callout:none;
-  box-shadow:0 0 0 2px #FFFFFF;
 }
-.tg-cell i{pointer-events:none; font-size:calc(var(--cell)*.44)}
+.tg-cell i{display:block; pointer-events:none; font-size:calc(var(--cell)*.44); line-height:1}
 .tg-cell.empty{cursor:pointer; background:#EDF2F7}
-.tg-cell.empty:hover{background:#DFF1FC; transform:scale(1.15); z-index:2}
-/* يومك الحالي: خلفية بيضاء + حلقة سماوية — مميز بدون أي اندماج */
-.tg-cell.empty.today{background:#FFFFFF; box-shadow:0 0 0 2px #FFFFFF, inset 0 0 0 2px #38BDF8}
-.tg-cell.empty.today:hover{background:#F0FAFF; transform:scale(1.15); z-index:2}
-.tg-cell.done{cursor:pointer; background:var(--cyan); color:#fff; box-shadow:0 0 0 2px #FFFFFF, 0 5px 12px -5px rgba(14,165,233,.55)}
-.tg-cell.done:hover{transform:scale(1.15); z-index:2; background:#00A2E8}
-.tg-cell.miss{cursor:pointer; background:var(--ink); color:#fff; box-shadow:0 0 0 2px #FFFFFF, 0 5px 12px -5px rgba(30,30,36,.5)}
-.tg-cell.miss:hover{transform:scale(1.15); z-index:2; background:#33333B}
+.tg-cell.empty:hover{background:#DFF1FC; transform:scale(1.14); z-index:2}
+.tg-cell.empty.today{background:#FFFFFF; box-shadow:inset 0 0 0 2px #38BDF8}
+.tg-cell.empty.today:hover{background:#F0FAFF; transform:scale(1.14); z-index:2}
+.tg-cell.done{cursor:pointer; background:var(--cyan); color:#fff; box-shadow:0 5px 12px -5px rgba(14,165,233,.55)}
+.tg-cell.done:hover{transform:scale(1.14); z-index:2; background:#00A2E8}
+.tg-cell.miss{cursor:pointer; background:var(--ink); color:#fff; box-shadow:0 5px 12px -5px rgba(30,30,36,.5)}
+.tg-cell.miss:hover{transform:scale(1.14); z-index:2; background:#33333B}
 .tg-cell.neutral{background:#E7EDF3; outline:1.5px dashed #C6D2DF; outline-offset:-3px}
 .tg-cell.future{background:#F3F6FA}
 .note-dot{position:absolute; top:9%; inset-inline-start:9%; width:15%; padding-bottom:15%; border-radius:50%; background:var(--cyan)}
 .tg-cell.done .note-dot, .tg-cell.miss .note-dot{background:#fff}
-.neu-dot{width:16%; padding-bottom:16%; border-radius:50%; background:#C4CFDB}
+.neu-dot{display:inline-block; width:16%; padding-bottom:16%; border-radius:50%; background:#C4CFDB}
 .tg-cell.pop{animation:cellpop .3s}
 @keyframes cellpop{40%{transform:scale(.76)}}
 .tg-cell.flash, .tg-dow.flash, .tg-sum.flash{animation:colflash 1.5s ease}
 @keyframes colflash{
-  0%,35%{box-shadow:0 0 0 2px #FFFFFF, inset 0 0 0 2.5px var(--cyan), inset 0 0 14px rgba(14,165,233,.4)}
-  100%{box-shadow:0 0 0 2px #FFFFFF}
+  0%,35%{box-shadow:inset 0 0 0 2.5px var(--cyan), inset 0 0 14px rgba(14,165,233,.4)}
+  100%{box-shadow:none}
 }
+/* صف النسب */
 .tg-sum{
-  display:grid; place-items:center;
-  font-size:clamp(7px, calc(var(--cell)*.3), 11px); font-weight:800;
+  border-radius:calc(var(--cell)*.16);
+  font-size:calc(var(--cell)*.3); font-weight:800;
   background:#F3F6FA; color:var(--slate); overflow:hidden;
-  box-shadow:0 0 0 2px #FFFFFF;
 }
 .tg-sum.f{background:var(--cyan-bg); color:var(--cyan-d)}
 .tg-sum.p{background:#EDF2F7; color:var(--slate)}
 .tg-sum.e{background:#F6F8FB; color:#C4CFDB}
-.tg-sum.n{background:transparent; color:transparent; box-shadow:none}
+.tg-sum.n{background:transparent; color:transparent}
 .empty{display:flex; flex-direction:column; align-items:center; gap:12px; padding:56px 20px; text-align:center}
 .empty i{font-size:42px; color:#C9D4E0}
 .empty p{color:var(--slate); font-weight:600; font-size:14px; max-width:340px}
@@ -529,7 +536,7 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
     <h1>نَبْض</h1>
     <svg class="ecg" viewBox="0 0 220 40" width="220" height="38" aria-hidden="true">
       <path pathLength="100" d="M0 20 H68 L80 20 88 6 99 34 107 20 H146 L154 11 162 20 H220"
-            fill="none" stroke="#0EA5E9" stroke-width="2.5" stroke-linecap:round="round" stroke-linejoin="round"/>
+            fill="none" stroke="#0EA5E9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     <p class="lk-sub">متتبع العادات الشخصي — أدخل كلمة المرور للمتابعة</p>
     <div class="lock-field">
@@ -660,9 +667,8 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
           </div>
           <span class="track-note"><i class="ph ph-hand-tap"></i>نقرة على المربع = قائمة اختيار الحالة · كليك يمين/ضغط مطوّل = القائمة نفسها · أيقونة العادة = تفاصيلها</span>
         </div>
-        <div class="track-scroll" id="trackScroll">
-          <div class="track-grid" id="trkGrid"></div>
-        </div>
+        <!-- الجدول يُبنى كاملاً بالجافاسكربت داخل هذا الحاوية -->
+        <div class="track-scroll" id="trackScroll"></div>
         <div class="empty" id="trkEmpty" hidden>
           <i class="ph ph-sparkle"></i>
           <p>لا توجد عادات بعد. أضف عادتك الأولى من لوحة التحكم لتبدأ رحلة الالتزام.</p>
@@ -1105,7 +1111,7 @@ function renderChart(){
   });
 }
 
-/* ==================== شبكة التتبع — صفوف flex مستقلة بمقاسات inline ==================== */
+/* ==================== شبكة التتبع — جدول <table> كلاسيكي ==================== */
 function cellInner(rec, st){
   const dot = rec && rec.n ? '<span class="note-dot"></span>' : '';
   let mark = '';
@@ -1137,64 +1143,59 @@ function refreshSum(key){
 /* ضلع المربع = الأصغر بين قيد العرض وقيد الارتفاع حتى أسفل الشاشة */
 function fitGrid(days){
   const scroller = $('#trackScroll');
-  const gap = 5;
-  const availW = Math.max(300, scroller.clientWidth - 10);
+  const S = 5; /* تباعد الجدول border-spacing */
+  const availW = Math.max(300, scroller.clientWidth - 12);
   const label = availW < 700 ? 42 : 52;
-  const byW = Math.floor((availW - label - gap * (days + 1)) / days);
+  /* عرض الجدول = label + days×cell + (days+1)×S  ≤  المتاح */
+  const byW = Math.floor((availW - label - S * (days + 1)) / days);
   const rect = scroller.getBoundingClientRect();
   const top = Math.max(64, rect.top);
-  const availH = Math.max(230, window.innerHeight - top - 18);
-  const rows = habits.length + 2; /* ترويسة + عادات + صف النسب */
-  const byH = Math.floor((availH - rows * gap) / (rows - 0.4)); /* صف النسب نصفه */
-  return { cell: Math.max(15, Math.min(byW, byH, 42)), label };
+  const availH = Math.max(230, window.innerHeight - top - 20);
+  /* ارتفاع الجدول = (habits+1)×cell + 0.6×cell + (rows+1)×S  ≤  المتاح */
+  const byH = Math.floor((availH - (habits.length + 3) * S) / (habits.length + 1.6));
+  return { cell: Math.max(15, Math.min(byW, byH, 44)), label };
 }
 function renderTracker(){
   hideTip();
   $('#trkMonth').textContent = monthName(view.y, view.m);
   updateMonthNav();
-  const grid = $('#trkGrid'), head = $('#trackHead'), scroll = $('#trackScroll'), emptyEl = $('#trkEmpty');
-  if(!habits.length){ head.hidden = true; scroll.hidden = true; emptyEl.hidden = false; return; }
-  head.hidden = false; scroll.hidden = false; emptyEl.hidden = true;
+  const scroller = $('#trackScroll'), head = $('#trackHead'), emptyEl = $('#trkEmpty');
+  if(!habits.length){ head.hidden = true; scroller.hidden = true; emptyEl.hidden = false; return; }
+  head.hidden = false; scroller.hidden = false; emptyEl.hidden = true;
 
   const last = monthDays(view.y, view.m), tKey = fmtKey(today());
   const fit = fitGrid(last);
-  const cell = fit.cell, label = fit.label, gap = 5;
+  const cell = fit.cell, label = fit.label;
   const half = Math.max(12, Math.round(cell * 0.6));
-  const rad  = Math.max(4,  Math.round(cell * .24));
-  const radL = Math.max(5,  Math.round(cell * .28));
-  const radS = Math.max(3,  Math.round(cell * .16));
   const showWd = cell >= 20;
 
-  grid.style.setProperty('--cell', cell + 'px');
+  /* بناء جدول كامل — محرك الجداول يفرض أبعاد الخلايا بنفسه */
+  let html = `<table class="tg-table" style="--cell:${cell}px"><colgroup><col style="width:${label}px">`;
+  for(let d = 0; d < last; d++) html += `<col style="width:${cell}px">`;
+  html += '</colgroup>';
 
-  /* كل صندوق: عرض + ارتفاع + استدارة بالبكسل inline — لا تمدد ممكن بنيوياً */
-  const SQ   = ` style="width:${cell}px;height:${cell}px;border-radius:${rad}px"`;
-  const SQW  = ` style="width:${label}px;height:${cell}px;border-radius:${radL}px"`;
-  const HLF  = ` style="width:${cell}px;height:${half}px;border-radius:${radS}px"`;
-  const HLFW = ` style="width:${label}px;height:${half}px;border-radius:${radS}px"`;
-
-  /* صف الترويسة */
-  let html = `<div class="tg-row"><div class="tg-corner"${SQW} data-tip="أيقونة العادة"><i class="ph-fill ph-calendar-days" style="font-size:${Math.round(cell*.45)}px"></i></div>`;
+  /* صف ترويسة الأيام */
+  html += `<tr><th class="tg-hd" style="height:${cell}px" data-tip="أيقونة العادة"><i class="ph-fill ph-calendar-days" style="display:block;font-size:${Math.round(cell*.45)}px;color:var(--cyan)"></i></th>`;
   for(let d = 1; d <= last; d++){
     const dt = new Date(view.y, view.m, d), key = fmtKey(dt), st = keyStatus(key);
-    html += `<div class="tg-dow ${st} ${key === tKey ? 'today' : ''}"${SQ} data-tip="${dateAr(dt)}"><b>${arNum(d)}</b>${showWd ? `<span>${narrowWd.format(dt)}</span>` : ''}</div>`;
+    html += `<th class="tg-hd tg-dow ${st} ${key === tKey ? 'today' : ''}" style="height:${cell}px" data-tip="${dateAr(dt)}"><b>${arNum(d)}</b>${showWd ? `<span>${narrowWd.format(dt)}</span>` : ''}</th>`;
   }
-  html += `</div>`;
+  html += '</tr>';
 
   /* صفوف العادات */
   habits.forEach(h => {
-    html += `<div class="tg-row"><div class="tg-label"${SQW} data-habit="${h.id}" data-tip="${esc(h.name)}"><i class="ph ph-${h.icon}" style="font-size:${Math.round(cell*.52)}px"></i></div>`;
+    html += `<tr><th class="tg-hd tg-label" style="height:${cell}px" data-habit="${h.id}" data-tip="${esc(h.name)}"><i class="ph ph-${h.icon}"></i></th>`;
     for(let d = 1; d <= last; d++){
       const key = fmtKey(new Date(view.y, view.m, d)), st = keyStatus(key);
       const rec = (records[key] || {})[h.id];
       const cls = st !== 'open' ? st : rec ? rec.s : 'empty';
-      html += `<div class="tg-cell ${cls} ${key === tKey ? 'today' : ''}"${SQ} data-day="${d}" data-key="${key}" data-habit="${h.id}">${cellInner(rec, st)}</div>`;
+      html += `<td class="tg-cell ${cls} ${key === tKey ? 'today' : ''}" style="height:${cell}px" data-day="${d}" data-key="${key}" data-habit="${h.id}">${cellInner(rec, st)}</td>`;
     }
-    html += `</div>`;
+    html += '</tr>';
   });
 
   /* صف النسب */
-  html += `<div class="tg-row"><div class="tg-corner"${HLFW} data-tip="نسبة إنجاز كل يوم"><i class="ph-fill ph-percent" style="font-size:12px"></i></div>`;
+  html += `<tr><th class="tg-hd" style="height:${half}px" data-tip="نسبة إنجاز كل يوم"><i class="ph-fill ph-percent" style="display:block;font-size:12px;color:var(--cyan)"></i></th>`;
   for(let d = 1; d <= last; d++){
     const key = fmtKey(new Date(view.y, view.m, d)), st = keyStatus(key), s = dayStats(key);
     let cls = 'n', txt = '';
@@ -1202,15 +1203,16 @@ function renderTracker(){
       if(s.recorded === 0){ cls = 'e'; txt = '·'; }
       else{ const pct = Math.round(s.done / s.total * 100); cls = pct === 100 ? 'f' : 'p'; txt = arNum(pct) + '٪'; }
     }
-    html += `<div class="tg-sum ${cls}"${HLF} data-key="${key}" data-day="${d}" data-tip="${dateAr(keyToDate(key))}${st==='open' && s.recorded>0 ? ' — إنجاز '+arNum(Math.round(s.done/s.total*100))+'٪' : ''}">${txt}</div>`;
+    html += `<td class="tg-sum ${cls}" style="height:${half}px" data-key="${key}" data-day="${d}" data-tip="${dateAr(keyToDate(key))}${st==='open' && s.recorded>0 ? ' — إنجاز '+arNum(Math.round(s.done/s.total*100))+'٪' : ''}">${txt}</td>`;
   }
-  html += `</div>`;
-  grid.innerHTML = html;
+  html += '</tr></table>';
+
+  scroller.innerHTML = html;
 
   if(pendingFocusDay != null){
     const d = pendingFocusDay; pendingFocusDay = null;
     requestAnimationFrame(() => {
-      $$(`#trkGrid [data-day="${d}"]`).forEach(el => { el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1600); });
+      $$(`#trackScroll [data-day="${d}"]`).forEach(el => { el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1600); });
     });
   }
 }
@@ -1250,10 +1252,10 @@ function cellMenuItems(key, hid){
   return items;
 }
 
-/* --- أحداث الشبكة --- */
-const trkGrid = $('#trkGrid');
+/* --- أحداث الشبكة (على الحاوية الدائمة) --- */
+const trackScroll = $('#trackScroll');
 let lpTimer = null, lpFired = false;
-trkGrid.addEventListener('click', e => {
+trackScroll.addEventListener('click', e => {
   if(lpFired){ e.stopImmediatePropagation(); lpFired = false; return; }
   const cell = e.target.closest('.tg-cell');
   if(cell){
@@ -1264,13 +1266,13 @@ trkGrid.addEventListener('click', e => {
   const lbl = e.target.closest('.tg-label');
   if(lbl){ const h = habitById(lbl.dataset.habit); if(h) habitPopup(h.id); }
 });
-trkGrid.addEventListener('contextmenu', e => {
+trackScroll.addEventListener('contextmenu', e => {
   const cell = e.target.closest('.tg-cell');
   const lbl = e.target.closest('.tg-label');
   if(cell){ e.preventDefault(); openCtx(e.clientX, e.clientY, cellMenuItems(cell.dataset.key, cell.dataset.habit)); }
   else if(lbl){ e.preventDefault(); const h = habitById(lbl.dataset.habit); if(h) habitPopup(h.id); }
 });
-trkGrid.addEventListener('touchstart', e => {
+trackScroll.addEventListener('touchstart', e => {
   const cell = e.target.closest('.tg-cell'); if(!cell) return;
   lpFired = false;
   const t = e.touches[0];
@@ -1280,7 +1282,7 @@ trkGrid.addEventListener('touchstart', e => {
     openCtx(t.clientX, t.clientY, cellMenuItems(cell.dataset.key, cell.dataset.habit));
   }, 480);
 }, { passive: true });
-['touchend','touchmove','touchcancel'].forEach(ev => trkGrid.addEventListener(ev, () => clearTimeout(lpTimer), { passive: true }));
+['touchend','touchmove','touchcancel'].forEach(ev => trackScroll.addEventListener(ev, () => clearTimeout(lpTimer), { passive: true }));
 
 /* ==================== قائمة السياق ==================== */
 const ctx = $('#ctxMenu');
