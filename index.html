@@ -203,8 +203,9 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
 }
 .sw.done{background:var(--cyan); box-shadow:0 3px 8px -2px rgba(14,165,233,.5)}
 .sw.miss{background:var(--ink)}
-.sw.empty{background:#F1F5F9}
-.sw.neutral{background:#EDF1F6; outline:1px dashed #C9D4E0; outline-offset:-2px}
+.sw.empty{background:#EDF2F7}
+.sw.neutral{background:#E7EDF3; outline:1.5px dashed #C6D2DF; outline-offset:-2px}
+.sw.today{background:#fff; box-shadow:inset 0 0 0 2px #7DD3FC}
 
 /* ================== لوحة الإنجاز ================== */
 .alert-bar{
@@ -279,8 +280,8 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
 .map-legend .d{width:11px; height:11px; border-radius:4px; display:inline-block; margin-inline-end:5px; vertical-align:-1px}
 
 /* ================== شبكة التتبع ==================
-   مقاسات كل العناصر تُكتب inline بالبكسل من الجافاسكربت —
-   لا اعتماد على أي ارتفاع وراثي أو var للعرض والارتفاع */
+   بنية جديدة: صفوف flex مستقلة (لا Grid واحد) + مقاسات inline بالبكسل
+   + حلقة بيضاء حول كل خلية تمنع اندماج الأعمدة بصرياً نهائياً */
 .track-card{
   padding:14px 18px 12px; border-radius:24px;
   background:linear-gradient(180deg,#FFFFFF,#FBFDFF);
@@ -289,82 +290,71 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
 .track-head{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:10px}
 .track-note{font-size:11.5px; color:var(--slate); font-weight:700; display:flex; gap:6px; align-items:center}
 .track-note i{color:var(--cyan); font-size:15px}
-.track-scroll{overflow-x:auto; padding:2px}
-.track-scroll::-webkit-scrollbar{height:7px}
+.track-scroll{overflow-x:auto; overflow-y:hidden; padding:3px}
+.track-scroll::-webkit-scrollbar{height:8px}
 .track-scroll::-webkit-scrollbar-thumb{background:#D5DEE9; border-radius:99px}
-.track-grid{
-  display:grid;
-  justify-content:center;
-  align-content:start;
-  align-items:start;
-  justify-items:start;
-  --cell:34px; --gap:4px;
-}
-.tg-corner{
-  display:grid; place-items:center; color:var(--cyan);
-}
-.tg-corner i{font-size:clamp(11px, calc(var(--cell)*.42), 17px)}
+.track-scroll::-webkit-scrollbar-track{background:transparent}
+.track-grid{display:flex; flex-direction:column; align-items:center; gap:5px; --cell:34px}
+.tg-row{display:flex; gap:5px; flex:none}
+.tg-row>*{flex:none}
+.tg-corner{display:grid; place-items:center; color:var(--cyan)}
 .tg-dow{
-  text-align:center; line-height:1.05; user-select:none; position:relative;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  overflow:hidden;
+  text-align:center; line-height:1.02; user-select:none; position:relative; overflow:hidden;
 }
 .tg-dow b{font-size:clamp(8px, calc(var(--cell)*.36), 13px); font-weight:800; color:var(--slate)}
-.tg-dow span{font-size:clamp(6px, calc(var(--cell)*.22), 8.5px); font-weight:700; color:#B6C2D2}
+.tg-dow span{font-size:clamp(6px, calc(var(--cell)*.24), 9px); font-weight:700; color:#B6C2D2}
 .tg-dow.future b, .tg-dow.neutral b{color:#C3CEDC}
+.tg-dow.today{background:var(--cyan-bg); box-shadow:0 0 0 2px #FFFFFF, inset 0 0 0 1.5px #BAE6FD}
 .tg-dow.today b{color:var(--cyan-d)}
-.tg-dow.today::after{
-  content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%);
-  width:46%; height:2.5px; border-radius:99px; background:var(--cyan);
-}
+.tg-dow.today span{color:var(--cyan)}
 .tg-label{
   display:grid; place-items:center;
-  background:#F6F9FC; border-radius:calc(var(--cell)*.28);
-  cursor:context-menu; transition:.18s;
-  overflow:hidden;
+  background:#F6F9FC; cursor:context-menu; transition:.18s; overflow:hidden;
 }
-.tg-label i{font-size:clamp(13px, calc(var(--cell)*.52), 21px); color:#334155; transition:color .18s}
-.tg-label:hover{background:var(--cyan); transform:scale(1.08); z-index:2}
+.tg-label i{color:#334155; transition:color .18s}
+.tg-label:hover{background:var(--cyan); transform:scale(1.06); z-index:2}
 .tg-label:hover i{color:#fff}
+/* الخلية: مقاس inline من الجافاسكربت + حلقة بيضاء فاصلة تمنع اندماج الأعمدة */
 .tg-cell{
-  border-radius:calc(var(--cell)*.24);
   display:grid; place-items:center;
-  position:relative; user-select:none;
-  overflow:hidden;
+  position:relative; user-select:none; overflow:hidden;
   transition:transform .15s, background .15s, box-shadow .15s;
   -webkit-touch-callout:none;
+  box-shadow:0 0 0 2px #FFFFFF;
 }
 .tg-cell i{pointer-events:none; font-size:calc(var(--cell)*.44)}
-.tg-cell.empty{cursor:pointer; background:#F1F5F9}
-.tg-cell.empty:hover{background:#DFF1FC; transform:scale(1.14); z-index:2; box-shadow:0 6px 14px -6px rgba(14,165,233,.4)}
-.tg-cell.empty.today{background:#E0F3FD}
-.tg-cell.done{cursor:pointer; background:var(--cyan); color:#fff; box-shadow:0 5px 12px -5px rgba(14,165,233,.55)}
-.tg-cell.done:hover{transform:scale(1.14); z-index:2; background:#00A2E8}
-.tg-cell.miss{cursor:pointer; background:var(--ink); color:#fff; box-shadow:0 5px 12px -5px rgba(30,30,36,.5)}
-.tg-cell.miss:hover{transform:scale(1.14); z-index:2; background:#33333B}
-.tg-cell.neutral{background:#EEF2F7; outline:1.5px dashed #CFDAE5; outline-offset:-3px}
-.tg-cell.future{background:#F6F8FB}
-.note-dot{position:absolute; top:9%; inset-inline-start:9%; width:14%; padding-bottom:14%; border-radius:50%; background:var(--cyan)}
+.tg-cell.empty{cursor:pointer; background:#EDF2F7}
+.tg-cell.empty:hover{background:#DFF1FC; transform:scale(1.15); z-index:2}
+/* يومك الحالي: خلفية بيضاء + حلقة سماوية — مميز بدون أي اندماج */
+.tg-cell.empty.today{background:#FFFFFF; box-shadow:0 0 0 2px #FFFFFF, inset 0 0 0 2px #38BDF8}
+.tg-cell.empty.today:hover{background:#F0FAFF; transform:scale(1.15); z-index:2}
+.tg-cell.done{cursor:pointer; background:var(--cyan); color:#fff; box-shadow:0 0 0 2px #FFFFFF, 0 5px 12px -5px rgba(14,165,233,.55)}
+.tg-cell.done:hover{transform:scale(1.15); z-index:2; background:#00A2E8}
+.tg-cell.miss{cursor:pointer; background:var(--ink); color:#fff; box-shadow:0 0 0 2px #FFFFFF, 0 5px 12px -5px rgba(30,30,36,.5)}
+.tg-cell.miss:hover{transform:scale(1.15); z-index:2; background:#33333B}
+.tg-cell.neutral{background:#E7EDF3; outline:1.5px dashed #C6D2DF; outline-offset:-3px}
+.tg-cell.future{background:#F3F6FA}
+.note-dot{position:absolute; top:9%; inset-inline-start:9%; width:15%; padding-bottom:15%; border-radius:50%; background:var(--cyan)}
 .tg-cell.done .note-dot, .tg-cell.miss .note-dot{background:#fff}
 .neu-dot{width:16%; padding-bottom:16%; border-radius:50%; background:#C4CFDB}
 .tg-cell.pop{animation:cellpop .3s}
 @keyframes cellpop{40%{transform:scale(.76)}}
 .tg-cell.flash, .tg-dow.flash, .tg-sum.flash{animation:colflash 1.5s ease}
 @keyframes colflash{
-  0%,35%{box-shadow:inset 0 0 0 2.5px var(--cyan), inset 0 0 14px rgba(14,165,233,.4)}
-  100%{box-shadow:inset 0 0 0 0 rgba(0,0,0,0)}
+  0%,35%{box-shadow:0 0 0 2px #FFFFFF, inset 0 0 0 2.5px var(--cyan), inset 0 0 14px rgba(14,165,233,.4)}
+  100%{box-shadow:0 0 0 2px #FFFFFF}
 }
 .tg-sum{
-  border-radius:calc(var(--cell)*.16);
   display:grid; place-items:center;
   font-size:clamp(7px, calc(var(--cell)*.3), 11px); font-weight:800;
-  background:#F6F8FB; color:var(--slate);
-  overflow:hidden;
+  background:#F3F6FA; color:var(--slate); overflow:hidden;
+  box-shadow:0 0 0 2px #FFFFFF;
 }
 .tg-sum.f{background:var(--cyan-bg); color:var(--cyan-d)}
-.tg-sum.p{background:#F1F5F9; color:var(--slate)}
+.tg-sum.p{background:#EDF2F7; color:var(--slate)}
 .tg-sum.e{background:#F6F8FB; color:#C4CFDB}
-.tg-sum.n{background:transparent; color:transparent}
+.tg-sum.n{background:transparent; color:transparent; box-shadow:none}
 .empty{display:flex; flex-direction:column; align-items:center; gap:12px; padding:56px 20px; text-align:center}
 .empty i{font-size:42px; color:#C9D4E0}
 .empty p{color:var(--slate); font-weight:600; font-size:14px; max-width:340px}
@@ -539,7 +529,7 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
     <h1>نَبْض</h1>
     <svg class="ecg" viewBox="0 0 220 40" width="220" height="38" aria-hidden="true">
       <path pathLength="100" d="M0 20 H68 L80 20 88 6 99 34 107 20 H146 L154 11 162 20 H220"
-            fill="none" stroke="#0EA5E9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            fill="none" stroke="#0EA5E9" stroke-width="2.5" stroke-linecap:round="round" stroke-linejoin="round"/>
     </svg>
     <p class="lk-sub">متتبع العادات الشخصي — أدخل كلمة المرور للمتابعة</p>
     <div class="lock-field">
@@ -664,6 +654,7 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
           <div class="legend">
             <span class="lg"><span class="sw done"></span>منجز</span>
             <span class="lg"><span class="sw miss"></span>غير منجز</span>
+            <span class="lg"><span class="sw today"></span>يومك الحالي</span>
             <span class="lg"><span class="sw empty"></span>بدون تسجيل</span>
             <span class="lg"><span class="sw neutral"></span>محايد (قبل البدء)</span>
           </div>
@@ -926,7 +917,6 @@ function go(p){
   const sec = $('#page-' + p);
   void sec.offsetWidth; sec.classList.add('on','anim');
   Sound.click();
-  /* العودة لأعلى الصفحة قبل قياس الشبكة حتى يكون حساب الارتفاع دقيقاً */
   if(p === 'tracker') window.scrollTo(0, 0);
   if(p === 'dashboard') renderDashboard();
   if(p === 'tracker')   renderTracker();
@@ -1115,7 +1105,7 @@ function renderChart(){
   });
 }
 
-/* ==================== شبكة التتبع — كل المقاسات inline بالبكسل ==================== */
+/* ==================== شبكة التتبع — صفوف flex مستقلة بمقاسات inline ==================== */
 function cellInner(rec, st){
   const dot = rec && rec.n ? '<span class="note-dot"></span>' : '';
   let mark = '';
@@ -1147,16 +1137,16 @@ function refreshSum(key){
 /* ضلع المربع = الأصغر بين قيد العرض وقيد الارتفاع حتى أسفل الشاشة */
 function fitGrid(days){
   const scroller = $('#trackScroll');
-  const gap = 4;
-  const availW = Math.max(320, (scroller.clientWidth || 900) - 10);
-  const label = availW < 760 ? 44 : 52;
+  const gap = 5;
+  const availW = Math.max(300, scroller.clientWidth - 10);
+  const label = availW < 700 ? 42 : 52;
   const byW = Math.floor((availW - label - gap * (days + 1)) / days);
   const rect = scroller.getBoundingClientRect();
-  const top = Math.max(74, rect.top);
-  const availH = Math.max(240, window.innerHeight - top - 22);
-  const rows = habits.length + 2;             /* ترويسة + عادات + صف النسب */
-  const byH = Math.floor((availH - rows * gap) / (rows - 0.4)); /* آخر صف نصفه */
-  return { cell: Math.max(14, Math.min(byW, byH, 44)), label };
+  const top = Math.max(64, rect.top);
+  const availH = Math.max(230, window.innerHeight - top - 18);
+  const rows = habits.length + 2; /* ترويسة + عادات + صف النسب */
+  const byH = Math.floor((availH - rows * gap) / (rows - 0.4)); /* صف النسب نصفه */
+  return { cell: Math.max(15, Math.min(byW, byH, 42)), label };
 }
 function renderTracker(){
   hideTip();
@@ -1168,38 +1158,43 @@ function renderTracker(){
 
   const last = monthDays(view.y, view.m), tKey = fmtKey(today());
   const fit = fitGrid(last);
-  const cell = fit.cell, label = fit.label;
-  const gap = cell >= 26 ? 4 : 3;
-  const half = Math.round(cell * 0.6);
-
-  /* قوالب inline بالبكسل — لا يمكن لأي قاعدة CSS أن تتجاوزها */
-  const SQ  = ` style="width:${cell}px;height:${cell}px"`;
-  const SQW = ` style="width:${label}px;height:${cell}px"`;
-  const HLF = ` style="width:${cell}px;height:${half}px"`;
-  const HLFW= ` style="width:${label}px;height:${half}px"`;
+  const cell = fit.cell, label = fit.label, gap = 5;
+  const half = Math.max(12, Math.round(cell * 0.6));
+  const rad  = Math.max(4,  Math.round(cell * .24));
+  const radL = Math.max(5,  Math.round(cell * .28));
+  const radS = Math.max(3,  Math.round(cell * .16));
+  const showWd = cell >= 20;
 
   grid.style.setProperty('--cell', cell + 'px');
-  grid.style.setProperty('--gap', gap + 'px');
-  grid.style.gridTemplateColumns = `${label}px repeat(${last}, ${cell}px)`;
-  grid.style.gridTemplateRows = `repeat(${habits.length + 1}, ${cell}px) ${half}px`;
-  grid.style.gridAutoRows = cell + 'px';
-  grid.style.gap = gap + 'px';
 
-  let html = `<div class="tg-corner"${SQW} data-tip="أيقونة العادة"><i class="ph-fill ph-calendar-days"></i></div>`;
+  /* كل صندوق: عرض + ارتفاع + استدارة بالبكسل inline — لا تمدد ممكن بنيوياً */
+  const SQ   = ` style="width:${cell}px;height:${cell}px;border-radius:${rad}px"`;
+  const SQW  = ` style="width:${label}px;height:${cell}px;border-radius:${radL}px"`;
+  const HLF  = ` style="width:${cell}px;height:${half}px;border-radius:${radS}px"`;
+  const HLFW = ` style="width:${label}px;height:${half}px;border-radius:${radS}px"`;
+
+  /* صف الترويسة */
+  let html = `<div class="tg-row"><div class="tg-corner"${SQW} data-tip="أيقونة العادة"><i class="ph-fill ph-calendar-days" style="font-size:${Math.round(cell*.45)}px"></i></div>`;
   for(let d = 1; d <= last; d++){
     const dt = new Date(view.y, view.m, d), key = fmtKey(dt), st = keyStatus(key);
-    html += `<div class="tg-dow ${st} ${key === tKey ? 'today' : ''}"${SQ} data-tip="${dateAr(dt)}"><b>${arNum(d)}</b><span>${narrowWd.format(dt)}</span></div>`;
+    html += `<div class="tg-dow ${st} ${key === tKey ? 'today' : ''}"${SQ} data-tip="${dateAr(dt)}"><b>${arNum(d)}</b>${showWd ? `<span>${narrowWd.format(dt)}</span>` : ''}</div>`;
   }
+  html += `</div>`;
+
+  /* صفوف العادات */
   habits.forEach(h => {
-    html += `<div class="tg-label"${SQW} data-habit="${h.id}" data-tip="${esc(h.name)}"><i class="ph ph-${h.icon}"></i></div>`;
+    html += `<div class="tg-row"><div class="tg-label"${SQW} data-habit="${h.id}" data-tip="${esc(h.name)}"><i class="ph ph-${h.icon}" style="font-size:${Math.round(cell*.52)}px"></i></div>`;
     for(let d = 1; d <= last; d++){
       const key = fmtKey(new Date(view.y, view.m, d)), st = keyStatus(key);
       const rec = (records[key] || {})[h.id];
       const cls = st !== 'open' ? st : rec ? rec.s : 'empty';
       html += `<div class="tg-cell ${cls} ${key === tKey ? 'today' : ''}"${SQ} data-day="${d}" data-key="${key}" data-habit="${h.id}">${cellInner(rec, st)}</div>`;
     }
+    html += `</div>`;
   });
-  html += `<div class="tg-corner"${HLFW} data-tip="نسبة إنجاز كل يوم"><i class="ph-fill ph-percent"></i></div>`;
+
+  /* صف النسب */
+  html += `<div class="tg-row"><div class="tg-corner"${HLFW} data-tip="نسبة إنجاز كل يوم"><i class="ph-fill ph-percent" style="font-size:12px"></i></div>`;
   for(let d = 1; d <= last; d++){
     const key = fmtKey(new Date(view.y, view.m, d)), st = keyStatus(key), s = dayStats(key);
     let cls = 'n', txt = '';
@@ -1209,6 +1204,7 @@ function renderTracker(){
     }
     html += `<div class="tg-sum ${cls}"${HLF} data-key="${key}" data-day="${d}" data-tip="${dateAr(keyToDate(key))}${st==='open' && s.recorded>0 ? ' — إنجاز '+arNum(Math.round(s.done/s.total*100))+'٪' : ''}">${txt}</div>`;
   }
+  html += `</div>`;
   grid.innerHTML = html;
 
   if(pendingFocusDay != null){
