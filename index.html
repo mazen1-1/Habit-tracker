@@ -28,7 +28,6 @@
   --shadow:0 1px 2px rgba(15,23,42,.05), 0 10px 30px -14px rgba(15,23,42,.14);
 }
 *{margin:0; padding:0; box-sizing:border-box}
-/* إصلاح: جعل خاصية hidden تعمل دائماً حتى مع display:flex المخصص */
 [hidden]{display:none !important}
 html{scroll-behavior:smooth}
 body{
@@ -81,17 +80,13 @@ input,textarea{font-family:inherit}
 .lock-card.ok .lock-logo i{transform:rotate(-12deg) scale(1.12)}
 .lock-card h1{font-size:30px; font-weight:900; letter-spacing:.5px}
 .ecg{display:block; margin:6px auto 2px}
-.ecg path{
-  stroke-dasharray:100;
-  animation:ecg 2.6s linear infinite;
-}
+.ecg path{stroke-dasharray:100; animation:ecg 2.6s linear infinite}
 @keyframes ecg{0%{stroke-dashoffset:100}60%,100%{stroke-dashoffset:-100}}
 .lock-card>p.lk-sub{color:var(--slate); font-size:13.5px; margin-bottom:24px}
 .lock-field{
   display:flex; align-items:center; gap:10px;
   border:1.5px solid var(--line); border-radius:13px;
-  background:#FBFCFE; padding:0 14px; height:50px;
-  transition:.2s;
+  background:#FBFCFE; padding:0 14px; height:50px; transition:.2s;
 }
 .lock-field:focus-within{border-color:var(--cyan); box-shadow:0 0 0 3.5px rgba(14,165,233,.14)}
 .lock-field>i{color:var(--slate-l); font-size:18px}
@@ -107,8 +102,7 @@ input,textarea{font-family:inherit}
 .lock-btn{
   width:100%; height:50px; border-radius:13px;
   background:var(--cyan); color:#fff;
-  font-size:15px; font-weight:800;
-  transition:.2s; margin-top:4px;
+  font-size:15px; font-weight:800; transition:.2s; margin-top:4px;
 }
 .lock-btn:hover{background:var(--cyan-d); transform:translateY(-1.5px); box-shadow:0 12px 24px -10px rgba(14,165,233,.6)}
 .lock-btn:active{transform:scale(.98)}
@@ -126,7 +120,7 @@ header{
 }
 .header-in{
   width:min(1240px, 100% - 40px); margin-inline:auto;
-  height:66px; display:flex; align-items:center; gap:18px;
+  height:66px; display:flex; align-items:center; gap:14px;
 }
 .brand{display:flex; align-items:center; gap:11px; margin-inline-end:auto}
 .brand-mark{
@@ -136,17 +130,12 @@ header{
 }
 .brand b{font-size:18px; font-weight:900; display:block; line-height:1.1}
 .brand small{font-size:11px; color:var(--slate); font-weight:600}
-
-.tabs{
-  position:relative; display:flex; gap:4px;
-  background:#E7ECF3; border-radius:13px; padding:4px;
-}
+.tabs{position:relative; display:flex; gap:4px; background:#E7ECF3; border-radius:13px; padding:4px}
 .tab{
   position:relative; z-index:1;
   display:flex; align-items:center; gap:7px;
   padding:8px 18px; border-radius:10px;
-  font-size:13.5px; font-weight:700; color:var(--slate);
-  transition:color .25s;
+  font-size:13.5px; font-weight:700; color:var(--slate); transition:color .25s;
 }
 .tab i{font-size:16px}
 .tab.active{color:var(--ink2)}
@@ -168,17 +157,16 @@ header{
 .ibtn-lock{
   width:38px; height:38px; border-radius:11px;
   background:#fff; border:1px solid var(--line);
-  display:grid; place-items:center; font-size:17px; color:var(--slate);
-  transition:.2s;
+  display:grid; place-items:center; font-size:17px; color:var(--slate); transition:.2s;
 }
-.ibtn-lock:hover{color:var(--red); border-color:#F5C6C6; background:#FEF5F5; transform:translateY(-1px)}
+.ibtn-lock:hover{color:var(--cyan-d); border-color:#BEE7FB; background:var(--cyan-bg); transform:translateY(-1px)}
+#lockOutBtn:hover{color:var(--red); border-color:#F5C6C6; background:#FEF5F5}
 
 main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:30px 0 70px}
 .page{display:none}
 .page.on{display:block}
 .page.anim{animation:pagein .38s ease}
 @keyframes pagein{from{opacity:0; transform:translateY(12px)}}
-
 .page-head{
   display:flex; align-items:flex-end; justify-content:space-between;
   gap:16px; flex-wrap:wrap; margin-bottom:20px;
@@ -186,15 +174,9 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:30px 0 70px}
 .page-head h1{font-size:26px; font-weight:900; display:flex; align-items:center; gap:10px}
 .page-head h1::before{content:''; width:8px; height:8px; border-radius:50%; background:var(--cyan); box-shadow:0 0 0 4px rgba(14,165,233,.18)}
 .page-head .sub{color:var(--slate); font-size:13px; font-weight:600; margin-top:3px}
-.month-nav{
-  display:flex; align-items:center; gap:8px;
-  background:#fff; border:1px solid var(--line); border-radius:12px; padding:5px;
-}
+.month-nav{display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:5px}
 .month-nav>b{font-size:14px; font-weight:800; min-width:120px; text-align:center}
-.mnav{
-  width:32px; height:32px; border-radius:9px; display:grid; place-items:center;
-  font-size:15px; color:var(--slate); transition:.15s;
-}
+.mnav{width:32px; height:32px; border-radius:9px; display:grid; place-items:center; font-size:15px; color:var(--slate); transition:.15s}
 .mnav:hover:not(:disabled){background:var(--cyan-bg); color:var(--cyan-d)}
 .mnav:disabled{opacity:.3; cursor:default}
 
@@ -209,14 +191,13 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:30px 0 70px}
 .card-head{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px}
 .card-head h2{font-size:15.5px; font-weight:800}
 .card-head h2 i{color:var(--cyan); margin-inline-end:6px}
-
 .legend{display:flex; gap:14px; flex-wrap:wrap}
 .lg{display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--slate)}
 .sw{width:14px; height:14px; border-radius:5px}
-.sw.done{background:var(--cyan)}
+.sw.done{background:var(--cyan); box-shadow:0 3px 8px -2px rgba(14,165,233,.5)}
 .sw.miss{background:var(--ink)}
-.sw.empty{background:#fff; border:1.5px solid #C9D4E0}
-.sw.neutral{background:#E8EDF3}
+.sw.empty{background:#F1F5F9}
+.sw.neutral{background:#EDF1F6; outline:1px dashed #C9D4E0; outline-offset:-2px}
 
 /* ================== لوحة الإنجاز ================== */
 .alert-bar{
@@ -235,9 +216,7 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:30px 0 70px}
   font-size:12px; font-weight:800; padding:4px 12px; border-radius:99px; transition:.15s;
 }
 .al-chips button:hover{background:var(--cyan); color:#fff; border-color:var(--cyan)}
-
 .dash-grid{display:grid; grid-template-columns:345px 1fr; gap:18px; margin-bottom:18px}
-
 .ring-card{padding:26px; display:flex; flex-direction:column; align-items:center; gap:18px;
   background-image:radial-gradient(circle, #E7EDF4 1px, transparent 1px); background-size:16px 16px;}
 .ring-wrap{position:relative; width:220px; height:220px}
@@ -256,10 +235,29 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:30px 0 70px}
 .mini-stats b{font-size:19px; font-weight:900; display:flex; align-items:center; gap:6px}
 .mini-stats b i{color:var(--cyan); font-size:17px}
 .mini-stats span{font-size:10.5px; font-weight:700; color:var(--slate-l)}
-
 .chart-card{padding:22px 24px 18px}
 .chart-box{position:relative; height:280px}
 #chartEmpty{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--slate); font-weight:600; font-size:13.5px; gap:8px}
+
+/* ====== رحلة الأشهر (المقارنة الشهرية) ====== */
+.months-card{padding:22px 24px; margin-bottom:18px}
+.months-hint{font-size:11px; font-weight:700; color:var(--slate-l); display:flex; align-items:center; gap:5px}
+.months-list{display:flex; flex-direction:column; gap:2px}
+.mrow{
+  display:flex; align-items:center; gap:14px;
+  padding:10px 12px; border-radius:12px; cursor:pointer; transition:.15s;
+}
+.mrow:hover{background:#F6FAFD}
+.mrow.sel{background:var(--cyan-bg); outline:1.5px solid #BEE7FB}
+.mname{width:118px; font-size:13px; font-weight:800; flex-shrink:0; display:flex; align-items:center; gap:7px}
+.mname i{color:var(--cyan); font-size:14px}
+.mrow.sel .mname{color:var(--cyan-d)}
+.mbar{flex:1; height:10px; background:#EEF2F7; border-radius:99px; overflow:hidden}
+.mbar span{display:block; height:100%; width:0; background:linear-gradient(270deg,#7DDAFF,var(--cyan)); border-radius:99px; transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.mpct{width:56px; text-align:center; font-weight:900; font-size:14px; flex-shrink:0}
+.mdelta{width:150px; flex-shrink:0; display:flex; align-items:center; gap:5px; font-size:11.5px; font-weight:800; justify-content:flex-start}
+.mdelta.up{color:var(--cyan-d)} .mdelta.down{color:var(--red)} .mdelta.flat{color:var(--slate-l)}
+.mempty{color:var(--slate); font-weight:600; font-size:13px; padding:16px 4px}
 
 .map-card{padding:22px 24px}
 .month-map{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px}
@@ -267,91 +265,92 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:30px 0 70px}
 .mm:hover{transform:scale(1.25); z-index:2}
 .mm span{width:8px; height:8px; border-radius:50%}
 .mm-full{background:var(--cyan)}
-.mm-full span{background:transparent}
 .mm-part{background:#D6F0FD; border:1.5px solid var(--cyan)}
 .mm-part span{background:var(--cyan); width:5px; height:5px}
 .mm-e{background:#fff; border:1.5px solid #C9D4E0}
-.mm-e span{background:transparent}
 .mm-f{background:#EFF3F8}
 .mm-x{background:#E8EDF3; opacity:.55}
 .mm-today{box-shadow:0 0 0 3px rgba(14,165,233,.3)}
 .map-legend{display:flex; gap:13px; flex-wrap:wrap; font-size:11px; font-weight:700; color:var(--slate)}
 .map-legend .d{width:11px; height:11px; border-radius:4px; display:inline-block; margin-inline-end:5px; vertical-align:-1px}
 
-/* ================== شبكة التتبع ================== */
-.grid-wrap{
-  overflow:auto; max-height:calc(100vh - 275px); min-height:320px;
-  border-radius:18px; border:1px solid var(--line);
-  background:#fff; box-shadow:var(--shadow);
-  touch-action:pan-x pan-y;
+/* ================== شبكة التتبع — مربعات ================== */
+.track-card{
+  padding:22px 24px; border-radius:24px;
+  background:linear-gradient(180deg,#FFFFFF,#FBFDFF);
+  box-shadow:0 24px 60px -28px rgba(15,23,42,.28), var(--shadow);
 }
-.grid{border-collapse:separate; border-spacing:0; min-width:1480px; width:100%}
-.grid th,.grid td{border-block-end:1px solid #EDF1F6; border-inline-start:1px solid #EDF1F6}
-.grid .no-b{border-inline-start:none}
-
-.grid thead th{
-  position:sticky; top:0; z-index:5;
-  background:#F8FAFD; height:52px; font-weight:800;
+.track-head{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:16px}
+.track-note{font-size:11.5px; color:var(--slate); font-weight:700; display:flex; gap:6px; align-items:center}
+.track-note i{color:var(--cyan); font-size:15px}
+.track-scroll{overflow-x:auto; padding-bottom:4px}
+.track-scroll::-webkit-scrollbar{height:8px}
+.track-scroll::-webkit-scrollbar-thumb{background:#D5DEE9; border-radius:99px}
+.track-grid{
+  display:grid;
+  gap:4px;
+  align-items:stretch;
+  width:100%;
 }
-.grid thead th:first-child{right:0; z-index:7}
-.d-head{width:44px; min-width:44px; text-align:center; line-height:1.15}
-.d-head b{display:block; font-size:13px; color:var(--ink2)}
-.d-head span{display:block; font-size:9px; color:var(--slate-l); font-weight:700}
-.d-head.neutral{background:#EDF1F6}
-.d-head.future b{color:#B9C5D3}
-.d-head.today{background:var(--cyan-bg)}
-.d-head.today b{color:var(--cyan-d)}
-.d-head.today span{color:var(--cyan)}
-
-tbody th{position:sticky; right:0; z-index:4; background:#fff}
-th.h-name{width:60px; min-width:60px; text-align:center; cursor:context-menu; padding:6px 0}
-.h-ic{
-  display:inline-grid; place-items:center; width:38px; height:38px;
-  border-radius:11px; background:#F1F5F9; color:#334155; font-size:19px; transition:.18s;
+.tg-corner{display:grid; place-items:center; color:var(--cyan); font-size:15px}
+.tg-dow{text-align:center; padding:0 0 7px; line-height:1.1; user-select:none; position:relative}
+.tg-dow b{display:block; font-size:12.5px; font-weight:800; color:var(--slate)}
+.tg-dow span{display:block; font-size:8px; font-weight:700; color:#B6C2D2; margin-top:1px}
+.tg-dow.future b, .tg-dow.neutral b{color:#C3CEDC}
+.tg-dow.today b{color:var(--cyan-d)}
+.tg-dow.today::after{
+  content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+  width:14px; height:3px; border-radius:99px; background:var(--cyan);
 }
-th.h-name:hover .h-ic{background:var(--cyan); color:#fff; transform:translateY(-1px)}
-.h-ic.xl{width:64px; height:64px; border-radius:18px; font-size:32px; margin-bottom:10px}
-
-td.cell{
-  width:44px; min-width:44px; height:42px; text-align:center;
-  position:relative; font-size:14px; user-select:none;
+.tg-label{
+  display:grid; place-items:center;
+  background:#F6F9FC; border-radius:10px;
+  cursor:context-menu; transition:.18s;
+}
+.tg-label .h-ic{width:30px; height:30px; font-size:16px; border-radius:9px; background:transparent}
+.tg-label:hover{background:var(--cyan); transform:scale(1.06); z-index:2}
+.tg-label:hover .h-ic{color:#fff}
+.tg-cell{
+  aspect-ratio:1; width:100%;
+  border-radius:9px;
+  display:grid; place-items:center;
+  font-size:13px; user-select:none; position:relative;
+  transition:transform .15s, background .15s, box-shadow .15s;
   -webkit-touch-callout:none;
-  transition:background .15s;
 }
-td.cell.empty{cursor:pointer}
-td.cell.empty:hover{background:#EAF7FE}
-td.cell.empty.today{background:#F2FAFE}
-td.cell.empty.today:hover{background:#E2F5FE}
-td.cell.done{background:var(--cyan); color:#fff; cursor:pointer}
-td.cell.done:hover{background:#009BDD}
-td.cell.miss{background:var(--ink); color:#fff; cursor:pointer}
-td.cell.miss:hover{background:#33333B}
-td.cell.neutral{background:#EDF1F6}
-td.cell.future{background:#FAFBFD}
+.tg-cell i{pointer-events:none}
+.tg-cell.empty{cursor:pointer; background:#F1F5F9}
+.tg-cell.empty:hover{background:#DFF1FC; transform:scale(1.16); z-index:2; box-shadow:0 8px 16px -6px rgba(14,165,233,.4)}
+.tg-cell.empty.today{background:#E0F3FD}
+.tg-cell.done{cursor:pointer; background:var(--cyan); color:#fff; box-shadow:0 6px 14px -6px rgba(14,165,233,.55)}
+.tg-cell.done:hover{transform:scale(1.16); z-index:2; background:#00A2E8}
+.tg-cell.miss{cursor:pointer; background:var(--ink); color:#fff; box-shadow:0 6px 14px -6px rgba(30,30,36,.5)}
+.tg-cell.miss:hover{transform:scale(1.16); z-index:2; background:#33333B}
+.tg-cell.neutral{background:#EDF1F6}
+.tg-cell.future{background:#F6F8FB}
+.note-dot{position:absolute; top:4px; inset-inline-start:4px; width:5.5px; height:5.5px; border-radius:50%; background:var(--cyan)}
+.tg-cell.done .note-dot, .tg-cell.miss .note-dot{background:#fff}
 .neu-dot{display:inline-block; width:5px; height:5px; border-radius:50%; background:#C4CFDB}
-.note-dot{position:absolute; top:5px; inset-inline-start:5px; width:6px; height:6px; border-radius:50%; background:var(--cyan)}
-td.cell.done .note-dot{background:#fff}
-td.cell.pop{animation:cellpop .3s}
-@keyframes cellpop{40%{transform:scale(.8)}}
-td.cell.flash, th.d-head.flash{animation:colflash 1.5s ease}
+.tg-cell.pop{animation:cellpop .3s}
+@keyframes cellpop{40%{transform:scale(.76)}}
+.tg-cell.flash, .tg-dow.flash, .tg-sum.flash{animation:colflash 1.5s ease}
 @keyframes colflash{
   0%,35%{box-shadow:inset 0 0 0 2.5px var(--cyan), inset 0 0 14px rgba(14,165,233,.4)}
   100%{box-shadow:inset 0 0 0 0 rgba(0,0,0,0)}
 }
-
-.sum-row td,.sum-row th{
-  position:sticky; bottom:0; z-index:5; background:#FBFCFE;
-  height:30px; font-size:10.5px; font-weight:800; text-align:center;
+.tg-sum{
+  height:22px; border-radius:7px;
+  display:grid; place-items:center;
+  font-size:10px; font-weight:800; background:#F6F8FB; color:var(--slate);
 }
-.sum-row th{right:0; z-index:7; font-size:11px; color:var(--slate)}
-.sum-c.f{color:var(--cyan-d)}
-.sum-c.p{color:var(--slate)}
-.sum-c.e{color:#C4CFDB}
-.sum-c.n{color:#DDE4EC}
-
-.hint{display:flex; align-items:center; gap:8px; color:var(--slate); font-size:12.5px; font-weight:600; margin-top:14px}
-.hint i{color:var(--cyan); font-size:16px}
-
+.tg-sum.f{background:var(--cyan-bg); color:var(--cyan-d)}
+.tg-sum.p{background:#F1F5F9; color:var(--slate)}
+.tg-sum.e{background:#F6F8FB; color:#C4CFDB}
+.tg-sum.n{background:transparent; color:transparent}
+@media (max-width:900px){
+  .track-grid{min-width:760px; gap:3px}
+  .track-scroll{overflow-x:auto}
+}
 .empty{display:flex; flex-direction:column; align-items:center; gap:12px; padding:56px 20px; text-align:center}
 .empty i{font-size:42px; color:#C9D4E0}
 .empty p{color:var(--slate); font-weight:600; font-size:14px; max-width:340px}
@@ -383,13 +382,9 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
 }
 .danger-zone b{font-size:13px; font-weight:800; color:var(--red); display:block}
 .danger-zone small{font-size:11px; color:var(--slate); font-weight:600}
-
 .list-card{padding:24px}
 .cnt{font-size:12px; font-weight:800; color:var(--cyan-d); background:var(--cyan-bg); padding:4px 12px; border-radius:99px}
-.hrow{
-  display:flex; align-items:center; gap:14px;
-  padding:14px 6px; border-block-end:1px solid #EEF2F7; transition:background .15s;
-}
+.hrow{display:flex; align-items:center; gap:14px; padding:14px 6px; border-block-end:1px solid #EEF2F7; transition:background .15s}
 .hrow:last-child{border-block-end:none}
 .hrow:hover{background:#FAFCFE}
 .h-meta{flex:1; min-width:0}
@@ -425,7 +420,6 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
 .btn:disabled{opacity:.45; cursor:default; transform:none !important; box-shadow:none !important}
 
 /* ================== المودال ================== */
-/* إصلاح: الطبقة مخفية افتراضياً (hidden في HTML) ولا تحجب النقرات إلا عند فتح نافذة فعلية */
 #modalRoot{position:fixed; inset:0; z-index:90; display:flex; align-items:center; justify-content:center; padding:20px}
 .m-back{position:absolute; inset:0; background:rgba(15,23,42,.45); backdrop-filter:blur(4px); animation:fadein .25s}
 @keyframes fadein{from{opacity:0}}
@@ -441,9 +435,7 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
 .m-text{color:var(--slate); font-size:13.5px; font-weight:600; line-height:1.9; margin-bottom:6px}
 .m-actions{display:flex; gap:10px; justify-content:flex-start; margin-top:18px}
 .m-card textarea{margin-top:0; background:#FBFCFE}
-.m-req{
-  display:flex; align-items:center; gap:6px; color:var(--red); font-size:12px; font-weight:700; margin-top:8px;
-}
+.m-req{display:flex; align-items:center; gap:6px; color:var(--red); font-size:12px; font-weight:700; margin-top:8px}
 .m-req i{font-size:14px}
 .note-view{
   background:#F8FAFC; border-inline-start:3.5px solid var(--cyan);
@@ -455,6 +447,11 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
 .pill.ok{background:var(--cyan-bg); color:var(--cyan-d)}
 .pill.bad{background:#F1F3F7; color:var(--ink)}
 .h-mini{display:flex; align-items:center; gap:9px; font-size:13px; font-weight:800}
+.h-ic{
+  display:inline-grid; place-items:center; width:38px; height:38px;
+  border-radius:11px; background:#F1F5F9; color:#334155; font-size:19px; transition:.18s;
+}
+.h-ic.xl{width:64px; height:64px; border-radius:18px; font-size:32px; margin-bottom:10px}
 .hb-pop{text-align:center}
 .hb-stat{background:#F8FAFC; border-radius:14px; padding:15px 17px; margin-top:14px; text-align:start}
 .hb-row{display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--slate); margin-bottom:9px}
@@ -477,7 +474,6 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
 #ctxMenu button:hover i{color:var(--cyan-d)}
 #ctxMenu button.dg, #ctxMenu button.dg i{color:var(--red)}
 #ctxMenu button.dg:hover{background:#FDECEC}
-
 #tip{
   position:fixed; z-index:150; transform:translate(-50%,-100%);
   background:var(--ink); color:#fff; font-size:12px; font-weight:700;
@@ -488,7 +484,6 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
   content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
   border:5px solid transparent; border-top-color:var(--ink);
 }
-
 #toastRoot{position:fixed; bottom:22px; left:22px; z-index:120; display:flex; flex-direction:column; gap:10px}
 .toast{
   display:flex; align-items:center; gap:10px;
@@ -505,16 +500,18 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
   .form-card{order:1}.list-card{order:2}
 }
 @media (max-width:640px){
-  .header-in{gap:10px}
+  .header-in{gap:8px}
   .brand small{display:none}
   .tab{padding:8px 12px; font-size:12.5px}
   .tab i{display:none}
-  .save-chip span{display:none}
+  .save-chip span:not(.save-dot){display:none}
   .page-head h1{font-size:21px}
   .ring-wrap{transform:scale(.85)}
   .mini-stats{flex-direction:column}
   .h-stat{width:110px}
   .h-meta small{display:none}
+  .mdelta{width:auto}
+  .mname{width:92px}
 }
 </style>
 </head>
@@ -552,10 +549,11 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
       <nav class="tabs" id="tabs">
         <span class="tab-ind" id="tabInd"></span>
         <button class="tab active" data-page="dashboard"><i class="ph ph-squares-four"></i>الرئيسية</button>
-        <button class="tab" data-page="tracker"><i class="ph ph-table"></i>التتبع</button>
+        <button class="tab" data-page="tracker"><i class="ph ph-squares-four"></i>التتبع</button>
         <button class="tab" data-page="admin"><i class="ph ph-gear-six"></i>التحكم</button>
       </nav>
       <div class="save-chip" id="saveChip"><span class="save-dot"></span><span>الحفظ التلقائي مفعّل</span></div>
+      <button class="ibtn-lock" id="soundBtn" data-tip="الأصوات"><i class="ph ph-speaker-high"></i></button>
       <button class="ibtn-lock" id="lockOutBtn" data-tip="قفل التطبيق"><i class="ph ph-lock-key"></i></button>
     </div>
   </header>
@@ -564,7 +562,7 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
     <!-- ====== لوحة الإنجاز ====== -->
     <section id="page-dashboard" class="page on">
       <div class="page-head">
-        <div><h1>لوحة الإنجاز</h1><p class="sub">نظرة شاملة على التزامك وتراكم عاداتك</p></div>
+        <div><h1>لوحة الإنجاز</h1><p class="sub">نظرة شاملة على التزامك وتقدّمك شهراً بعد شهر</p></div>
         <div class="month-nav">
           <button class="mnav prev" aria-label="الشهر السابق"><i class="ph-bold ph-caret-right"></i></button>
           <b id="dashMonth"></b>
@@ -612,6 +610,15 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
         </div>
       </div>
 
+      <!-- رحلة الأشهر: مقارنة التقدم بين الشهور -->
+      <div class="card months-card">
+        <div class="card-head">
+          <h2><i class="ph-fill ph-path"></i>رحلة الأشهر — هل هناك تقدّم؟</h2>
+          <span class="months-hint"><i class="ph ph-hand-pointing"></i>اضغط على أي شهر لاستعراض تفاصيله</span>
+        </div>
+        <div class="months-list" id="monthsList"></div>
+      </div>
+
       <div class="card map-card">
         <div class="card-head">
           <h2><i class="ph-fill ph-calendar-check"></i>خريطة الشهر</h2>
@@ -630,7 +637,7 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
     <!-- ====== شبكة التتبع ====== -->
     <section id="page-tracker" class="page">
       <div class="page-head">
-        <div><h1>شبكة التتبع</h1><p class="sub">حدّد إنجازك يوماً بيوم — كل خانة تحكي قصة</p></div>
+        <div><h1>شبكة التتبع</h1><p class="sub">حدّد إنجازك يوماً بيوم — كل مربع يحكي قصة</p></div>
         <div class="month-nav">
           <button class="mnav prev" aria-label="الشهر السابق"><i class="ph-bold ph-caret-right"></i></button>
           <b id="trkMonth"></b>
@@ -638,15 +645,25 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
         </div>
       </div>
 
-      <div class="grid-wrap" id="gridWrap">
-        <table class="grid"><thead id="trkHead"></thead><tbody id="trkBody"></tbody></table>
+      <div class="card track-card">
+        <div class="track-head" id="trackHead">
+          <div class="legend">
+            <span class="lg"><span class="sw done"></span>منجز</span>
+            <span class="lg"><span class="sw miss"></span>غير منجز</span>
+            <span class="lg"><span class="sw empty"></span>بدون تسجيل</span>
+            <span class="lg"><span class="sw neutral"></span>محايد (قبل البدء)</span>
+          </div>
+          <span class="track-note"><i class="ph ph-hand-tap"></i>نقرة = تبديل الحالة · كليك يمين (أو ضغطة مطوّلة) = الخيارات والملاحظات</span>
+        </div>
+        <div class="track-scroll" id="trackScroll">
+          <div class="track-grid" id="trkGrid"></div>
+        </div>
         <div class="empty" id="trkEmpty" hidden>
           <i class="ph ph-sparkle"></i>
           <p>لا توجد عادات بعد. أضف عادتك الأولى من لوحة التحكم لتبدأ رحلة الالتزام.</p>
           <button class="btn dark" id="goAdminBtn"><i class="ph ph-gear-six"></i>الانتقال إلى لوحة التحكم</button>
         </div>
       </div>
-      <p class="hint"><i class="ph ph-cursor-click"></i> نقرة واحدة على الخلية للتبديل بين الحالات · كليك يمين (أو ضغطة مطوّلة على الجوال) لعرض الملاحظات والخيارات · كليك يمين على أيقونة العادة لعرض تفاصيلها</p>
     </section>
 
     <!-- ====== لوحة التحكم ====== -->
@@ -687,7 +704,6 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
   </main>
 </div>
 
-<!-- إصلاح: إضافة hidden هنا حتى لا تحجب الطبقة الفارغة كل نقرات الصفحة -->
 <div id="modalRoot" hidden></div>
 <div id="ctxMenu" hidden></div>
 <div id="tip" hidden></div>
@@ -706,21 +722,85 @@ const monthDays = (y,m) => new Date(y, m+1, 0).getDate();
 const monthName = (y,m) => new Date(y,m,1).toLocaleDateString('ar',{month:'long', year:'numeric'});
 const dateAr = d => d.toLocaleDateString('ar',{weekday:'long', day:'numeric', month:'long'});
 const wdF = new Intl.DateTimeFormat('ar',{weekday:'short'});
+const narrowWd = new Intl.DateTimeFormat('ar',{weekday:'narrow'});
 const monthShortF = new Intl.DateTimeFormat('ar',{month:'long'});
+
+/* ==================== محرك الأصوات (Web Audio — بدون ملفات) ==================== */
+const Sound = {
+  ctx:null, master:null,
+  enabled: localStorage.getItem('hzt_sound') !== '0',
+  ensure(){
+    if(!this.ctx){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return false;
+      this.ctx = new AC();
+      this.master = this.ctx.createGain();
+      this.master.gain.value = 0.55;
+      this.master.connect(this.ctx.destination);
+    }
+    if(this.ctx.state === 'suspended') this.ctx.resume();
+    return true;
+  },
+  tone(freq, dur, type='sine', vol=0.12, delay=0, glide=null){
+    if(!this.enabled || !this.ensure()) return;
+    const t = this.ctx.currentTime + delay;
+    const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, t);
+    if(glide) o.frequency.exponentialRampToValueAtTime(Math.max(30, glide), t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t + dur + 0.06);
+  },
+  whoosh(dur=0.16, vol=0.035, delay=0){
+    if(!this.enabled || !this.ensure()) return;
+    const t = this.ctx.currentTime + delay;
+    const buf = this.ctx.createBuffer(1, Math.floor(this.ctx.sampleRate * dur), this.ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i] = (Math.random()*2-1) * (1 - i/d.length);
+    const src = this.ctx.createBufferSource(); src.buffer = buf;
+    const f = this.ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=1300; f.Q.value=0.7;
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f); f.connect(g); g.connect(this.master);
+    src.start(t);
+  },
+  click(){ this.tone(1900,0.045,'triangle',0.05); },
+  tick(){ this.tone(1400,0.04,'triangle',0.045); },
+  check(){ this.tone(720,0.08,'sine',0.11); this.tone(1080,0.16,'sine',0.09,0.06); },
+  uncheck(){ this.tone(560,0.08,'sine',0.09); this.tone(380,0.13,'sine',0.08,0.055); },
+  miss(){ this.tone(320,0.18,'sine',0.10,0,170); this.whoosh(0.12,0.02); },
+  pop(){ this.tone(880,0.07,'sine',0.08,0,1500); },
+  close(){ this.tone(600,0.06,'sine',0.05,0,380); },
+  error(){ this.tone(240,0.15,'square',0.045,0,190); this.tone(210,0.17,'square',0.04,0.13,160); },
+  success(){ [523.25,659.25,783.99,1046.5].forEach((f,i)=>this.tone(f,0.18,'sine',0.085,i*0.075)); this.whoosh(0.2,0.015,0.05); },
+  del(){ this.tone(420,0.22,'triangle',0.09,0,110); },
+  swipe(){ this.whoosh(0.18,0.035); this.tone(500,0.1,'sine',0.04,0,900); },
+  toggle(){ this.tone(980,0.05,'triangle',0.06,0,720); }
+};
+function applySoundIcon(){ $('#soundBtn i').className = Sound.enabled ? 'ph ph-speaker-high' : 'ph ph-speaker-slash'; }
 
 /* ==================== الحالة والتخزين ==================== */
 const LS = { habits:'hzt_habits', records:'hzt_records', auth:'hzt_auth', start:'hzt_start' };
 const PASSWORD = 'mazen1.1';
 const ICONS = ['dumbbell','book-open','drop','moon-stars','code','heartbeat','brain','plant','sun','pen-nib',
                'bicycle','bowl-food','coffee','timer','medal','music-notes','person-simple-walk','shield-check',
-               'lightbulb','target','flame','gauge','calculator','chat-circle-text'];
+               'lightbulb','target','flame','gauge','puzzle-piece','chat-circle-text'];
+/* العادات الافتراضية — من قائمتك */
 const DEFAULT_HABITS = [
-  {name:'قراءة ٢٠ صفحة',  desc:'قراءة كتاب يومياً قبل النوم — عشرون صفحة على الأقل دون مقاطعة.', icon:'book-open'},
-  {name:'تمرين رياضي',    desc:'ثلاثون دقيقة من التمارين: مقاومة أو كارديو حسب جدول اليوم.', icon:'dumbbell'},
-  {name:'شرب ٨ أكواب ماء', desc:'الالتزام بشرب ثمانية أكواب ماء موزعة على ساعات اليوم.', icon:'drop'},
-  {name:'نوم مبكر',       desc:'النوم قبل منتصف الليل للحفاظ على الطاقة والتركيز.', icon:'moon-stars'},
-  {name:'تعلّم وبرمجة',   desc:'ساعة على الأقل من التعلّم العميق أو كتابة الكود يومياً.', icon:'code'},
+  {name:'الصلاة في المسجد',          desc:'صلاة المواقيت الخمس دائماً في المسجد.', icon:'person-simple-walk'},
+  {name:'الصلاة على النبي (500 مرة)', desc:'الصلاة على محمد «صلى الله عليه وسلم» 500 مرة يومياً.', icon:'target'},
+  {name:'حفظ القرآن الكريم',         desc:'حفظ يوميّ صفحة جديدة من القرآن الكريم ومراجعة صفحتين من المحفوظ.', icon:'book-open'},
+  {name:'متابعة درس منفذي',          desc:'متابعة درس واحد من المنهج الدراسي المقرر علينا يومياً.', icon:'puzzle-piece'},
+  {name:'أذكار بعد الصلاة',          desc:'الأذكار المخصوصة التي تُقال بعد الصلوات المفروضة.', icon:'plant'},
+  {name:'التوقف',                    desc:'', icon:'shield-check'},
+  {name:'تمرين حسبية',               desc:'عمل يومياً تمرين «طبل» للحساب — تكرار عدة مرات ومنتظم.', icon:'heartbeat'},
 ];
+/* للترحيل التلقائي من القائمة الافتراضية القديمة مع الحفاظ على العلامات */
+const OLD_DEFAULTS = ['قراءة ٢٠ صفحة','تمرين رياضي','شرب ٨ أكواب ماء','نوم مبكر','تعلّم وبرمجة'];
 
 let habits = [], records = {}, startDateD = null, authed = false;
 let view = { y: today().getFullYear(), m: today().getMonth() };
@@ -736,6 +816,7 @@ function load(){
   startDateD = s ? keyToDate(s) : null;
   authed = localStorage.getItem(LS.auth) === '1';
   if(!habits || !startDateD) seed();
+  else migrate();
 }
 function save(){
   localStorage.setItem(LS.habits,  JSON.stringify(habits));
@@ -749,6 +830,13 @@ function seed(){
   habits = DEFAULT_HABITS.map((h,i) => ({ id:'h'+Date.now()+i, createdAt:Date.now(), ...h }));
   records = {};
   save();
+}
+/* إذا كانت العادات المخزنة هي الافتراضية القديمة: استبدلها بالجديدة مع الاحتفاظ بالمعرّفات والعلامات */
+function migrate(){
+  if(habits.length === OLD_DEFAULTS.length && habits.every((h,i) => h.name === OLD_DEFAULTS[i])){
+    DEFAULT_HABITS.forEach((d,i) => Object.assign(habits[i], d));
+    save();
+  }
 }
 
 /* ==================== منطق الأيام والنسب ==================== */
@@ -777,7 +865,7 @@ function monthProgress(y, m){
 function currentStreak(){
   let s = 0; const d = today();
   const ts = dayStats(fmtKey(d));
-  if(ts.total > 0 && ts.done < ts.total) d.setDate(d.getDate() - 1); // اليوم لم يُحسم بعد
+  if(ts.total > 0 && ts.done < ts.total) d.setDate(d.getDate() - 1);
   while(true){
     if(startDateD && d < startDateD) break;
     const st = dayStats(fmtKey(d));
@@ -800,6 +888,18 @@ function habitPct(id){
   for(const key in records){ const v = records[key][id]; if(v){ v.s === 'done' ? done++ : miss++; } }
   return (done + miss) ? Math.round(done / (done + miss) * 100) : null;
 }
+/* سلسلة النسب الشهرية من شهر البداية حتى الشهر الحالي */
+function monthlySeries(){
+  const out = [];
+  const cur = new Date(startDateD.getFullYear(), startDateD.getMonth(), 1);
+  const end = new Date(today().getFullYear(), today().getMonth(), 1);
+  while(cur <= end){
+    const p = monthProgress(cur.getFullYear(), cur.getMonth());
+    out.push({ y: cur.getFullYear(), m: cur.getMonth(), pct: p.pct });
+    cur.setMonth(cur.getMonth() + 1);
+  }
+  return out;
+}
 
 /* ==================== التنقل بين الصفحات ==================== */
 function moveInd(){
@@ -815,6 +915,7 @@ function go(p){
   $$('.page').forEach(s => s.classList.remove('on','anim'));
   const sec = $('#page-' + p);
   void sec.offsetWidth; sec.classList.add('on','anim');
+  Sound.click();
   if(p === 'dashboard') renderDashboard();
   if(p === 'tracker')   renderTracker();
   if(p === 'admin')     renderAdmin();
@@ -837,6 +938,7 @@ function updateMonthNav(){
   const idx = y*12 + m;
   if(idx < startIdx || idx > nowIdx) return;
   view = { y, m };
+  Sound.tick();
   currentPage === 'dashboard' ? renderDashboard() : renderTracker();
 }));
 
@@ -866,6 +968,7 @@ function renderDashboard(){
   $('#statStreak').textContent = arNum(currentStreak());
   renderMonthMap();
   renderAlert();
+  renderMonths();
   renderChart();
 }
 function renderMonthMap(){
@@ -893,7 +996,7 @@ function renderMonthMap(){
   if(b) focusDate(new Date(view.y, view.m, +b.dataset.day));
 });
 function focusDate(dObj){
-  hideTip();
+  hideTip(); Sound.swipe();
   view = { y: dObj.getFullYear(), m: dObj.getMonth() };
   pendingFocusDay = dObj.getDate();
   go('tracker');
@@ -918,6 +1021,36 @@ function renderAlert(){
   if(b) focusDate(keyToDate(b.dataset.ts));
 });
  $('#alGo').addEventListener('click', () => focusDate(today()));
+
+/* ====== رحلة الأشهر: مقارنة كل شهر بما قبله ====== */
+function renderMonths(){
+  const list = $('#monthsList');
+  if(!habits.length){ list.innerHTML = '<p class="mempty">أضف عاداتك أولاً ليبدأ سجل الأشهر بالتراكم.</p>'; return; }
+  const series = monthlySeries();
+  list.innerHTML = series.map((mo, i) => {
+    const prev = i > 0 ? series[i-1] : null;
+    const diff = prev ? mo.pct - prev.pct : null;
+    const sel = mo.y === view.y && mo.m === view.m;
+    let delta;
+    if(!prev) delta = `<span class="mdelta flat"><i class="ph ph-flag-checkered"></i>بداية الرحلة</span>`;
+    else if(diff > 0) delta = `<span class="mdelta up"><i class="ph-fill ph-trend-up"></i>+${arNum(diff)}٪ عن ${monthShortF.format(new Date(prev.y, prev.m, 1))}</span>`;
+    else if(diff < 0) delta = `<span class="mdelta down"><i class="ph-fill ph-trend-down"></i>−${arNum(Math.abs(diff))}٪ عن ${monthShortF.format(new Date(prev.y, prev.m, 1))}</span>`;
+    else delta = `<span class="mdelta flat"><i class="ph ph-minus"></i>مستقر كالشهر السابق</span>`;
+    return `<div class="mrow ${sel ? 'sel' : ''}" data-y="${mo.y}" data-m="${mo.m}" data-tip="استعراض ${monthName(mo.y, mo.m)}">
+      <span class="mname"><i class="ph-fill ph-calendar-blank"></i>${monthName(mo.y, mo.m)}</span>
+      <span class="mbar"><span style="width:${mo.pct}%"></span></span>
+      <span class="mpct">${arNum(mo.pct)}٪</span>
+      ${delta}
+    </div>`;
+  }).join('');
+  requestAnimationFrame(() => $$('#monthsList .mbar span').forEach(s => s.style.width = s.style.width));
+}
+ $('#monthsList').addEventListener('click', e => {
+  const r = e.target.closest('.mrow'); if(!r) return;
+  view = { y:+r.dataset.y, m:+r.dataset.m };
+  Sound.tick();
+  renderDashboard();
+});
 
 let chartObj = null;
 function renderChart(){
@@ -972,7 +1105,7 @@ function renderChart(){
   });
 }
 
-/* ==================== شبكة التتبع ==================== */
+/* ==================== شبكة التتبع — مربعات بلا سكرول ==================== */
 function cellInner(rec, st){
   const dot = rec && rec.n ? '<span class="note-dot"></span>' : '';
   let mark = '';
@@ -981,133 +1114,133 @@ function cellInner(rec, st){
   return dot + mark;
 }
 function refreshCell(key, hid){
-  const td = document.querySelector(`td.cell[data-key="${key}"][data-habit="${hid}"]`);
+  const td = document.querySelector(`.tg-cell[data-key="${key}"][data-habit="${hid}"]`);
   if(!td) return;
   const st = keyStatus(key), rec = (records[key] || {})[hid];
-  td.className = 'cell ' + (st !== 'open' ? st : rec ? rec.s : 'empty') + (key === fmtKey(today()) ? ' today' : '');
+  td.className = 'tg-cell ' + (st !== 'open' ? st : rec ? rec.s : 'empty') + (key === fmtKey(today()) ? ' today' : '');
   td.innerHTML = cellInner(rec, st);
   td.classList.add('pop'); setTimeout(() => td.classList.remove('pop'), 320);
 }
 function refreshSum(key){
-  const td = document.querySelector(`.sum-c[data-key="${key}"]`);
+  const td = document.querySelector(`.tg-sum[data-key="${key}"]`);
   if(!td) return;
   const st = keyStatus(key), s = dayStats(key);
-  let cls = 'n', txt = '·';
-  if(st !== 'open'){ cls = 'n'; txt = st === 'future' ? '' : '·'; }
-  else if(s.recorded === 0){ cls = 'e'; txt = '–'; }
-  else{
-    const pct = Math.round(s.done / s.total * 100);
-    cls = pct === 100 ? 'f' : 'p'; txt = arNum(pct);
+  let cls = 'n', txt = '';
+  if(st === 'open'){
+    if(s.recorded === 0){ cls = 'e'; txt = '·'; }
+    else{ const pct = Math.round(s.done / s.total * 100); cls = pct === 100 ? 'f' : 'p'; txt = arNum(pct) + '٪'; }
   }
-  td.className = `sum-c ${cls}`;
+  td.className = `tg-sum ${cls}`;
   td.textContent = txt;
 }
 function renderTracker(){
   hideTip();
   $('#trkMonth').textContent = monthName(view.y, view.m);
   updateMonthNav();
-  const table = $('.grid'), emptyEl = $('#trkEmpty');
-  if(!habits.length){ table.style.display = 'none'; emptyEl.hidden = false; return; }
-  table.style.display = ''; emptyEl.hidden = true;
+  const grid = $('#trkGrid'), head = $('#trackHead'), scroll = $('#trackScroll'), emptyEl = $('#trkEmpty');
+  if(!habits.length){ head.hidden = true; scroll.hidden = true; emptyEl.hidden = false; return; }
+  head.hidden = false; scroll.hidden = false; emptyEl.hidden = true;
 
   const last = monthDays(view.y, view.m), tKey = fmtKey(today());
-  let head = '<tr><th class="no-b"><i class="ph ph-list-checks" style="color:var(--cyan)"></i></th>';
-  for(let d = 1; d <= last; d++){
-    const key = fmtKey(new Date(view.y, view.m, d)), st = keyStatus(key);
-    head += `<th class="d-head no-b ${st} ${key === tKey ? 'today' : ''}" data-day="${d}"><b>${arNum(d)}</b><span>${wdF.format(new Date(view.y, view.m, d))}</span></th>`;
-  }
-  $('#trkHead').innerHTML = head + '</tr>';
+  grid.style.gridTemplateColumns = `56px repeat(${last}, minmax(0, 1fr))`;
 
-  let body = '';
+  let html = '<div class="tg-corner" data-tip="أيقونة العادة"><i class="ph-fill ph-calendar-days"></i></div>';
+  for(let d = 1; d <= last; d++){
+    const dt = new Date(view.y, view.m, d), key = fmtKey(dt), st = keyStatus(key);
+    html += `<div class="tg-dow ${st} ${key === tKey ? 'today' : ''}" data-tip="${dateAr(dt)}"><b>${arNum(d)}</b><span>${narrowWd.format(dt)}</span></div>`;
+  }
   habits.forEach(h => {
-    body += `<tr><th class="h-name no-b" data-habit="${h.id}" data-tip="${esc(h.name)}"><span class="h-ic"><i class="ph ph-${h.icon}"></i></span></th>`;
+    html += `<div class="tg-label" data-habit="${h.id}" data-tip="${esc(h.name)}"><span class="h-ic"><i class="ph ph-${h.icon}"></i></span></div>`;
     for(let d = 1; d <= last; d++){
       const key = fmtKey(new Date(view.y, view.m, d)), st = keyStatus(key);
       const rec = (records[key] || {})[h.id];
       const cls = st !== 'open' ? st : rec ? rec.s : 'empty';
-      body += `<td class="cell ${cls} ${key === tKey ? 'today' : ''}" data-day="${d}" data-key="${key}" data-habit="${h.id}">${cellInner(rec, st)}</td>`;
+      html += `<div class="tg-cell ${cls} ${key === tKey ? 'today' : ''}" data-day="${d}" data-key="${key}" data-habit="${h.id}">${cellInner(rec, st)}</div>`;
     }
-    body += '</tr>';
   });
-  body += '<tr class="sum-row"><th class="no-b">الإنجاز</th>';
+  html += '<div class="tg-corner" data-tip="نسبة إنجاز كل يوم"><i class="ph-fill ph-percent"></i></div>';
   for(let d = 1; d <= last; d++){
     const key = fmtKey(new Date(view.y, view.m, d)), st = keyStatus(key), s = dayStats(key);
-    let cls = 'n', txt = st === 'future' ? '' : '·';
+    let cls = 'n', txt = '';
     if(st === 'open'){
-      if(s.recorded === 0){ cls = 'e'; txt = '–'; }
-      else{ const pct = Math.round(s.done / s.total * 100); cls = pct === 100 ? 'f' : 'p'; txt = arNum(pct); }
+      if(s.recorded === 0){ cls = 'e'; txt = '·'; }
+      else{ const pct = Math.round(s.done / s.total * 100); cls = pct === 100 ? 'f' : 'p'; txt = arNum(pct) + '٪'; }
     }
-    body += `<td class="sum-c ${cls}" data-key="${key}" data-day="${d}" data-tip="${dateAr(keyToDate(key))}">${txt}</td>`;
+    html += `<div class="tg-sum ${cls}" data-key="${key}" data-day="${d}" data-tip="${dateAr(keyToDate(key))}${st==='open' && s.recorded>0 ? ' — إنجاز '+arNum(Math.round(s.done/s.total*100))+'٪' : ''}">${txt}</div>`;
   }
-  $('#trkBody').innerHTML = body + '</tr>';
+  grid.innerHTML = html;
 
   if(pendingFocusDay != null){
     const d = pendingFocusDay; pendingFocusDay = null;
     requestAnimationFrame(() => {
-      const cell = $(`#trkBody td.cell[data-day="${d}"]`);
+      const cell = grid.querySelector(`.tg-cell[data-day="${d}"]`);
       if(!cell) return;
-      cell.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      $$('.grid [data-day="' + d + '"]').forEach(el => { el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1600); });
+      cell.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+      $$(`#trkGrid [data-day="${d}"]`).forEach(el => { el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1600); });
     });
   }
 }
  $('#goAdminBtn').addEventListener('click', () => go('admin'));
 
-/* --- تحديد الحالات بالنقر والتدوير --- */
+/* --- تحديد الحالات --- */
 function setCell(key, hid, val){ (records[key] || (records[key] = {}))[hid] = val; save(); refreshCell(key, hid); refreshSum(key); }
 function clearCell(key, hid){
   const r = records[key];
   if(r){ delete r[hid]; if(!Object.keys(r).length) delete records[key]; }
   save(); refreshCell(key, hid); refreshSum(key);
 }
-function cycleCell(td){
-  const key = td.dataset.key, hid = td.dataset.habit;
+function cycleCell(el){
+  const key = el.dataset.key, hid = el.dataset.habit;
   if(keyStatus(key) !== 'open'){ toast('هذا اليوم خارج نطاق التتبع', 'info'); return; }
   const rec = (records[key] || {})[hid];
-  if(!rec) setCell(key, hid, { s:'done' });
+  if(!rec){ setCell(key, hid, { s:'done' }); Sound.check(); }
   else if(rec.s === 'done') askMiss(key, hid);
-  else clearCell(key, hid);
+  else{ clearCell(key, hid); Sound.uncheck(); }
 }
 
 /* --- أحداث الشبكة --- */
-const gridWrap = $('#gridWrap');
+const trackScroll = $('#trackScroll');
 let lpTimer = null, lpFired = false;
-gridWrap.addEventListener('click', e => {
+trackScroll.addEventListener('click', e => {
   if(lpFired){ e.stopImmediatePropagation(); lpFired = false; return; }
-  const td = e.target.closest('td.cell');
-  if(td) cycleCell(td);
+  const cell = e.target.closest('.tg-cell');
+  if(cell) cycleCell(cell);
+  else{
+    const lbl = e.target.closest('.tg-label');
+    if(lbl){ const h = habitById(lbl.dataset.habit); if(h) habitPopup(h.id); }
+  }
 });
-gridWrap.addEventListener('contextmenu', e => {
-  const td = e.target.closest('td.cell');
-  const th = e.target.closest('th.h-name');
-  if(td){ e.preventDefault(); openCellMenu({ clientX: e.clientX, clientY: e.clientY }, td); }
-  else if(th){ e.preventDefault(); const h = habitById(th.dataset.habit); if(h) habitPopup(h.id); }
+trackScroll.addEventListener('contextmenu', e => {
+  const cell = e.target.closest('.tg-cell');
+  const lbl = e.target.closest('.tg-label');
+  if(cell){ e.preventDefault(); openCellMenu({ clientX: e.clientX, clientY: e.clientY }, cell); }
+  else if(lbl){ e.preventDefault(); const h = habitById(lbl.dataset.habit); if(h) habitPopup(h.id); }
 });
-gridWrap.addEventListener('touchstart', e => {
-  const td = e.target.closest('td.cell'); if(!td) return;
+trackScroll.addEventListener('touchstart', e => {
+  const cell = e.target.closest('.tg-cell'); if(!cell) return;
   lpFired = false;
   const t = e.touches[0];
-  lpTimer = setTimeout(() => { lpFired = true; openCellMenu({ clientX: t.clientX, clientY: t.clientY }, td); }, 480);
+  lpTimer = setTimeout(() => { lpFired = true; openCellMenu({ clientX: t.clientX, clientY: t.clientY }, cell); }, 480);
 }, { passive: true });
-['touchend','touchmove','touchcancel'].forEach(ev => gridWrap.addEventListener(ev, () => clearTimeout(lpTimer), { passive: true }));
+['touchend','touchmove','touchcancel'].forEach(ev => trackScroll.addEventListener(ev, () => clearTimeout(lpTimer), { passive: true }));
 
-function openCellMenu(pos, td){
-  const key = td.dataset.key, hid = td.dataset.habit;
+function openCellMenu(pos, el){
+  const key = el.dataset.key, hid = el.dataset.habit;
   const rec = (records[key] || {})[hid], st = keyStatus(key);
   const items = [];
   if(rec && rec.n) items.push({ icon:'eye', label:'عرض الملاحظة', act:() => showNoteModal(key, hid) });
   if(st !== 'open'){ if(items.length) openCtx(pos.clientX, pos.clientY, items); return; }
-  if(!rec || rec.s !== 'done') items.push({ icon:'check-circle', label:'تحديد كمنجز', act:() => setCell(key, hid, { s:'done' }) });
+  if(!rec || rec.s !== 'done') items.push({ icon:'check-circle', label:'تحديد كمنجز', act:() => { setCell(key, hid, { s:'done' }); Sound.check(); } });
   if(!rec || rec.s !== 'miss') items.push({ icon:'x-circle', label:'تحديد كغير منجز', act:() => askMiss(key, hid) });
   if(rec) items.push({ icon:'note-pencil', label: rec.n ? 'تعديل الملاحظة' : 'إضافة ملاحظة', act:() => editNote(key, hid) });
-  if(rec) items.push({ icon:'eraser', label:'مسح الحالة', danger:true, act:() => clearCell(key, hid) });
+  if(rec) items.push({ icon:'eraser', label:'مسح الحالة', danger:true, act:() => { clearCell(key, hid); Sound.uncheck(); } });
   openCtx(pos.clientX, pos.clientY, items);
 }
 
 /* ==================== قائمة السياق ==================== */
 const ctx = $('#ctxMenu');
 function openCtx(x, y, items){
-  closeCtx();
+  closeCtx(); Sound.tick();
   ctx.innerHTML = items.map((it, i) =>
     `<button data-i="${i}" class="${it.danger ? 'dg' : ''}"><i class="ph ph-${it.icon}"></i>${it.label}</button>`).join('');
   ctx.hidden = false;
@@ -1121,7 +1254,7 @@ function openCtx(x, y, items){
 function closeCtx(){ ctx.hidden = true; }
 document.addEventListener('pointerdown', e => { if(!ctx.hidden && !ctx.contains(e.target)) closeCtx(); }, true);
 
-/* ==================== التلميحات (Tooltip) ==================== */
+/* ==================== التلميحات ==================== */
 const tip = $('#tip');
 let tipTarget = null;
 document.addEventListener('mouseover', e => {
@@ -1140,19 +1273,19 @@ document.addEventListener('scroll', hideTip, true);
 function hideTip(){ tip.hidden = true; tipTarget = null; }
 
 /* ==================== نظام المودالات ==================== */
-/* إصلاح: إظهار/إخفاء الطبقة صراحةً — كانت الطبقة الفارغة تحجب كل النقرات */
 const modalRoot = $('#modalRoot');
 const modalOpen = () => !!modalRoot.firstChild;
 function showModal(inner, actionsHtml, dismissable = true){
   modalRoot.hidden = false;
   modalRoot.innerHTML = `<div class="m-back" id="mBack"></div><div class="m-card">${inner}<div class="m-actions">${actionsHtml}</div></div>`;
+  Sound.pop();
   if(dismissable) $('#mBack').addEventListener('click', closeModal);
 }
 function closeModal(){
+  if(modalOpen()) Sound.close();
   modalRoot.hidden = true;
   modalRoot.innerHTML = '';
 }
-
 function askMiss(key, hid){
   const h = habitById(hid), old = (records[key] || {})[hid]?.n || '';
   const d = keyToDate(key);
@@ -1167,7 +1300,7 @@ function askMiss(key, hid){
   const upd = () => { const ok = !!ta.value.trim(); sv.disabled = !ok; rq.style.display = ok ? 'none' : 'flex'; };
   ta.addEventListener('input', upd); upd(); ta.focus();
   $('#mCancel').addEventListener('click', closeModal);
-  sv.addEventListener('click', () => { setCell(key, hid, { s:'miss', n: ta.value.trim() }); closeModal(); toast('سُجّل عدم الإنجاز مع السبب', 'x-circle'); });
+  sv.addEventListener('click', () => { setCell(key, hid, { s:'miss', n: ta.value.trim() }); closeModal(); Sound.miss(); toast('سُجّل عدم الإنجاز مع السبب', 'x-circle'); });
 }
 function editNote(key, hid){
   const h = habitById(hid), rec = (records[key] || {})[hid];
@@ -1183,7 +1316,7 @@ function editNote(key, hid){
     const v = $('#mNote').value.trim();
     const r = (records[key] || (records[key] = {}))[hid];
     if(v) r.n = v; else delete r.n;
-    save(); refreshCell(key, hid); closeModal();
+    save(); refreshCell(key, hid); closeModal(); Sound.pop();
     toast(has ? 'حُدّثت الملاحظة' : 'أُضيفت الملاحظة', 'note-pencil');
   });
 }
@@ -1238,7 +1371,7 @@ function buildIconPick(){
 }
  $('#iconPick').addEventListener('click', e => {
   const b = e.target.closest('button[data-ic]'); if(!b) return;
-  selIcon = b.dataset.ic;
+  selIcon = b.dataset.ic; Sound.tick();
   $$('#iconPick button').forEach(x => x.classList.toggle('sel', x.dataset.ic === selIcon));
 });
 function resetForm(){
@@ -1249,18 +1382,18 @@ function resetForm(){
   $('#fCancel').hidden = true;
   buildIconPick();
 }
- $('#fCancel').addEventListener('click', resetForm);
+ $('#fCancel').addEventListener('click', () => { resetForm(); Sound.tick(); });
  $('#hForm').addEventListener('submit', e => {
   e.preventDefault();
   const name = $('#fName').value.trim(), desc = $('#fDesc').value.trim();
-  if(!name){ toast('اكتب اسم العادة أولاً', 'warning'); $('#fName').focus(); return; }
+  if(!name){ Sound.error(); toast('اكتب اسم العادة أولاً', 'warning'); $('#fName').focus(); return; }
   if(editingHabitId){
     const h = habitById(editingHabitId);
     h.name = name; h.desc = desc; h.icon = selIcon;
-    toast('حُدّثت العادة بنجاح');
+    Sound.check(); toast('حُدّثت العادة بنجاح');
   }else{
     habits.push({ id: 'h' + Date.now(), createdAt: Date.now(), name, desc, icon: selIcon });
-    toast('أُضيفت العادة بنجاح');
+    Sound.success(); toast('أُضيفت العادة بنجاح');
   }
   save(); resetForm(); renderHabitList();
 });
@@ -1293,7 +1426,7 @@ function renderHabitList(){
     $('#formTitle').textContent = 'تعديل العادة';
     $('#fSubmit').innerHTML = '<i class="ph ph-check"></i>حفظ التعديل';
     $('#fCancel').hidden = false;
-    buildIconPick();
+    buildIconPick(); Sound.tick();
     $('#hForm').scrollIntoView({ behavior:'smooth', block:'nearest' });
     $('#fName').focus();
   }else{
@@ -1302,7 +1435,7 @@ function renderHabitList(){
       'حذف نهائياً', () => {
         habits = habits.filter(x => x.id !== id);
         for(const key in records){ delete records[key][id]; if(!Object.keys(records[key]).length) delete records[key]; }
-        save(); renderHabitList(); toast('حُذفت العادة وسجلاتها', 'trash');
+        save(); renderHabitList(); Sound.del(); toast('حُذفت العادة وسجلاتها', 'trash');
       });
   }
 });
@@ -1310,20 +1443,31 @@ function renderHabitList(){
   confirmModal('إعادة تعيين التطبيق',
     'سيتم مسح جميع العادات والسجلات والملاحظات نهائياً، ثم استعادة العادات الافتراضية مع بدء عدّ جديد من اليوم.',
     'نعم، امسح كل شيء', () => {
-      seed(); resetForm(); renderHabitList(); toast('أُعيد تعيين التطبيق بالكامل', 'clock-counter-clockwise');
+      seed(); resetForm(); renderHabitList(); Sound.del(); toast('أُعيد تعيين التطبيق بالكامل', 'clock-counter-clockwise');
     });
 });
 function renderAdmin(){ hideTip(); buildIconPick(); renderHabitList(); }
 
-/* ==================== التنبيهات (Toast) ==================== */
+/* ==================== التنبيهات ==================== */
 function toast(msg, icon = 'check-circle'){
   const t = document.createElement('div');
   t.className = 'toast';
   t.innerHTML = `<i class="ph-fill ph-${icon}"></i>${esc(msg)}`;
   $('#toastRoot').appendChild(t);
+  Sound.tick();
   requestAnimationFrame(() => t.classList.add('in'));
   setTimeout(() => { t.classList.remove('in'); setTimeout(() => t.remove(), 320); }, 2300);
 }
+
+/* ==================== زر الأصوات ==================== */
+applySoundIcon();
+ $('#soundBtn').addEventListener('click', () => {
+  Sound.enabled = !Sound.enabled;
+  localStorage.setItem('hzt_sound', Sound.enabled ? '1' : '0');
+  applySoundIcon();
+  if(Sound.enabled) Sound.toggle();
+  toast(Sound.enabled ? 'تم تفعيل الأصوات' : 'تم كتم الأصوات', Sound.enabled ? 'speaker-high' : 'speaker-slash');
+});
 
 /* ==================== شاشة القفل ==================== */
 const lockScreen = $('#lockScreen'), lockCard = $('#lockCard');
@@ -1334,6 +1478,7 @@ function tryUnlock(){
     lockCard.classList.add('ok');
     $('#lockIcon').className = 'ph-fill ph-lock-key-open';
     setAuth(true);
+    Sound.success();
     setTimeout(() => {
       lockScreen.classList.add('out');
       setTimeout(() => { lockScreen.hidden = true; enterApp(); }, 700);
@@ -1341,6 +1486,7 @@ function tryUnlock(){
   }else{
     lockCard.classList.add('shake');
     $('#lockErr').classList.add('show');
+    Sound.error();
     setTimeout(() => lockCard.classList.remove('shake'), 520);
     $('#pwInput').select();
   }
@@ -1351,7 +1497,7 @@ function tryUnlock(){
   const inp = $('#pwInput'), show = inp.type === 'password';
   inp.type = show ? 'text' : 'password';
   $('#pwToggle i').className = show ? 'ph ph-eye-slash' : 'ph ph-eye';
-  inp.focus();
+  Sound.tick(); inp.focus();
 });
  $('#lockOutBtn').addEventListener('click', () => {
   confirmModal('قفل التطبيق', 'هل تريد قفل الجلسة؟ ستحتاج إلى كلمة المرور للعودة مرة أخرى.', 'قفل الجلسة', () => {
@@ -1361,6 +1507,7 @@ function tryUnlock(){
     $('#lockIcon').className = 'ph-fill ph-lock-key';
     $('#pwInput').value = '';
     lockScreen.hidden = false;
+    Sound.del();
     requestAnimationFrame(() => lockScreen.classList.remove('out'));
   }, false);
 });
@@ -1377,7 +1524,6 @@ if(authed){
 }else{
   setTimeout(() => $('#pwInput').focus(), 300);
 }
-/* إصلاح: إعادة ضبط مؤشر التبويبات بعد تحميل الخط لضبط موقعه بدقة */
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(moveInd);
 </script>
 </body>
