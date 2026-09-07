@@ -28,6 +28,8 @@
   --shadow:0 1px 2px rgba(15,23,42,.05), 0 10px 30px -14px rgba(15,23,42,.14);
 }
 *{margin:0; padding:0; box-sizing:border-box}
+/* إصلاح: جعل خاصية hidden تعمل دائماً حتى مع display:flex المخصص */
+[hidden]{display:none !important}
 html{scroll-behavior:smooth}
 body{
   font-family:'Cairo', sans-serif;
@@ -239,7 +241,6 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:30px 0 70px}
 .ring-card{padding:26px; display:flex; flex-direction:column; align-items:center; gap:18px;
   background-image:radial-gradient(circle, #E7EDF4 1px, transparent 1px); background-size:16px 16px;}
 .ring-wrap{position:relative; width:220px; height:220px}
-.ring-wrap svg{transform:rotate(0)}
 .ring-ticks{stroke:#C6D2E0; stroke-width:2; stroke-dasharray:1.5 7.2; fill:none}
 .ring-bg{stroke:#E6ECF3; stroke-width:14; fill:none}
 #ringFg{stroke:var(--cyan); stroke-width:14; fill:none; stroke-linecap:round}
@@ -367,8 +368,7 @@ input[type=text],textarea{
   padding:10px 14px; font-size:13.5px; font-weight:600; color:var(--ink2);
   background:#FBFCFE; transition:.2s; resize:vertical;
 }
-input[type=text]:focus,textarea:focus,.lock-field:focus-within input{outline:none}
-input[type=text]:focus,textarea:focus{border-color:var(--cyan); box-shadow:0 0 0 3.5px rgba(14,165,233,.13); background:#fff}
+input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); box-shadow:0 0 0 3.5px rgba(14,165,233,.13); background:#fff}
 .icon-pick{display:grid; grid-template-columns:repeat(8,1fr); gap:7px; margin-bottom:18px}
 .icon-pick button{
   aspect-ratio:1; border-radius:10px; border:1.5px solid var(--line);
@@ -425,6 +425,7 @@ input[type=text]:focus,textarea:focus{border-color:var(--cyan); box-shadow:0 0 0
 .btn:disabled{opacity:.45; cursor:default; transform:none !important; box-shadow:none !important}
 
 /* ================== المودال ================== */
+/* إصلاح: الطبقة مخفية افتراضياً (hidden في HTML) ولا تحجب النقرات إلا عند فتح نافذة فعلية */
 #modalRoot{position:fixed; inset:0; z-index:90; display:flex; align-items:center; justify-content:center; padding:20px}
 .m-back{position:absolute; inset:0; background:rgba(15,23,42,.45); backdrop-filter:blur(4px); animation:fadein .25s}
 @keyframes fadein{from{opacity:0}}
@@ -686,7 +687,8 @@ input[type=text]:focus,textarea:focus{border-color:var(--cyan); box-shadow:0 0 0
   </main>
 </div>
 
-<div id="modalRoot"></div>
+<!-- إصلاح: إضافة hidden هنا حتى لا تحجب الطبقة الفارغة كل نقرات الصفحة -->
+<div id="modalRoot" hidden></div>
 <div id="ctxMenu" hidden></div>
 <div id="tip" hidden></div>
 <div id="toastRoot"></div>
@@ -723,7 +725,7 @@ const DEFAULT_HABITS = [
 let habits = [], records = {}, startDateD = null, authed = false;
 let view = { y: today().getFullYear(), m: today().getMonth() };
 let currentPage = 'dashboard';
-let chart = null, rafId = null;
+let rafId = null;
 let selIcon = 'dumbbell', editingHabitId = null;
 let pendingFocusDay = null;
 
@@ -991,7 +993,7 @@ function refreshSum(key){
   if(!td) return;
   const st = keyStatus(key), s = dayStats(key);
   let cls = 'n', txt = '·';
-  if(st !== 'open'){ cls = st === 'future' ? 'n' : 'n'; txt = st === 'future' ? '' : '·'; }
+  if(st !== 'open'){ cls = 'n'; txt = st === 'future' ? '' : '·'; }
   else if(s.recorded === 0){ cls = 'e'; txt = '–'; }
   else{
     const pct = Math.round(s.done / s.total * 100);
@@ -1138,13 +1140,18 @@ document.addEventListener('scroll', hideTip, true);
 function hideTip(){ tip.hidden = true; tipTarget = null; }
 
 /* ==================== نظام المودالات ==================== */
+/* إصلاح: إظهار/إخفاء الطبقة صراحةً — كانت الطبقة الفارغة تحجب كل النقرات */
 const modalRoot = $('#modalRoot');
 const modalOpen = () => !!modalRoot.firstChild;
 function showModal(inner, actionsHtml, dismissable = true){
+  modalRoot.hidden = false;
   modalRoot.innerHTML = `<div class="m-back" id="mBack"></div><div class="m-card">${inner}<div class="m-actions">${actionsHtml}</div></div>`;
   if(dismissable) $('#mBack').addEventListener('click', closeModal);
 }
-function closeModal(){ modalRoot.innerHTML = ''; }
+function closeModal(){
+  modalRoot.hidden = true;
+  modalRoot.innerHTML = '';
+}
 
 function askMiss(key, hid){
   const h = habitById(hid), old = (records[key] || {})[hid]?.n || '';
@@ -1370,6 +1377,8 @@ if(authed){
 }else{
   setTimeout(() => $('#pwInput').focus(), 300);
 }
+/* إصلاح: إعادة ضبط مؤشر التبويبات بعد تحميل الخط لضبط موقعه بدقة */
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(moveInd);
 </script>
 </body>
 </html>
