@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نَبْض — متتبع العادات</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+<style>
+/* ================== الأساس والهوية ================== */
+:root{
+  --bg:#F4F6F9;
+  --ink:#1E1E24;
+  --ink2:#0F172A;
+  --slate:#64748B;
+  --slate-l:#94A3B8;
+  --line:#E3E9F0;
+  --cyan:#0EA5E9;
+  --cyan-d:#0284C7;
+  --cyan-bg:#E8F6FD;
+  --red:#DC2626;
+  --shadow:0 1px 2px rgba(15,23,42,.05), 0 10px 30px -14px rgba(15,23,42,.14);
+}
+*{margin:0; padding:0; box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Cairo', sans-serif;
+  background:var(--bg);
+  background-image:radial-gradient(circle, #DFE6EE 1px, transparent 1px);
+  background-size:22px 22px;
+  color:var(--ink2);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit; border:none; background:none; cursor:pointer; color:inherit}
+input,textarea{font-family:inherit}
+::selection{background:rgba(14,165,233,.25)}
+
+/* ================== شاشة القفل ================== */
+#lockScreen{
+  position:fixed; inset:0; z-index:200;
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  background:var(--bg);
+  background-image:radial-gradient(circle, #D7DFEA 1px, transparent 1px);
+  background-size:20px 20px;
+  transition:transform .7s cubic-bezier(.75,0,.25,1);
+}
+#lockScreen.out{transform:translateY(-102%)}
+.lock-card{
+  width:min(410px, 94vw);
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(10px);
+  border:1px solid #fff;
+  border-radius:26px;
+  padding:40px 36px 32px;
+  text-align:center;
+  box-shadow:0 40px 90px -30px rgba(15,23,42,.28), 0 2px 6px rgba(15,23,42,.05);
+  transition:border-color .3s, box-shadow .3s;
+  position:relative;
+}
+.lock-card.ok{border-color:var(--cyan); box-shadow:0 40px 90px -30px rgba(14,165,233,.4)}
+.lock-card.shake{animation:shake .5s}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.lock-logo{
+  width:66px; height:66px; margin:0 auto 14px;
+  border-radius:20px; background:var(--ink);
+  display:grid; place-items:center;
+  color:#38D0FF; font-size:32px;
+  box-shadow:0 12px 26px -10px rgba(30,30,36,.55);
+}
+.lock-logo i{transition:transform .4s}
+.lock-card.ok .lock-logo{background:var(--cyan); color:#fff}
+.lock-card.ok .lock-logo i{transform:rotate(-12deg) scale(1.12)}
+.lock-card h1{font-size:30px; font-weight:900; letter-spacing:.5px}
+.ecg{display:block; margin:6px auto 2px}
+.ecg path{
+  stroke-dasharray:100;
+  animation:ecg 2.6s linear infinite;
+}
+@keyframes ecg{0%{stroke-dashoffset:100}60%,100%{stroke-dashoffset:-100}}
+.lock-card>p.lk-sub{color:var(--slate); font-size:13.5px; margin-bottom:24px}
+.lock-field{
+  display:flex; align-items:center; gap:10px;
+  border:1.5px solid var(--line); border-radius:13px;
+  background:#FBFCFE; padding:0 14px; height:50px;
+  transition:.2s;
+}
+.lock-field:focus-within{border-color:var(--cyan); box-shadow:0 0 0 3.5px rgba(14,165,233,.14)}
+.lock-field>i{color:var(--slate-l); font-size:18px}
+.lock-field input{flex:1; border:none; outline:none; background:none; font-size:15px; font-weight:600; color:var(--ink2); min-width:0}
+.lock-field button{color:var(--slate-l); font-size:18px; display:grid; place-items:center}
+.lock-field button:hover{color:var(--cyan)}
+.lock-err{
+  color:var(--red); font-size:12.5px; font-weight:700;
+  min-height:22px; margin-top:8px; display:flex; align-items:center; justify-content:center; gap:5px;
+  opacity:0; transition:opacity .2s;
+}
+.lock-err.show{opacity:1}
+.lock-btn{
+  width:100%; height:50px; border-radius:13px;
+  background:var(--cyan); color:#fff;
+  font-size:15px; font-weight:800;
+  transition:.2s; margin-top:4px;
+}
+.lock-btn:hover{background:var(--cyan-d); transform:translateY(-1.5px); box-shadow:0 12px 24px -10px rgba(14,165,233,.6)}
+.lock-btn:active{transform:scale(.98)}
+.lock-hint{margin-top:16px; font-size:11.5px; color:var(--slate-l); display:flex; align-items:center; justify-content:center; gap:6px}
+
+/* ================== الهيكل العام ================== */
+#app{opacity:0; transition:opacity .5s .1s}
+#app.ready{opacity:1}
+header{
+  position:sticky; top:0; z-index:50;
+  background:rgba(244,246,249,.82);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.8);
+  box-shadow:0 1px 0 var(--line);
+}
+.header-in{
+  width:min(1240px, 100% - 40px); margin-inline:auto;
+  height:66px; display:flex; align-items:center; gap:18px;
+}
+.brand{display:flex; align-items:center; gap:11px; margin-inline-end:auto}
+.brand-mark{
+  width:40px; height:40px; border-radius:12px; background:var(--ink);
+  display:grid; place-items:center; color:#38D0FF; font-size:21px;
+  box-shadow:0 8px 18px -8px rgba(30,30,36,.5);
+}
+.brand b{font-size:18px; font-weight:900; display:block; line-height:1.1}
+.brand small{font-size:11px; color:var(--slate); font-weight:600}
+
+.tabs{
+  position:relative; display:flex; gap:4px;
+  background:#E7ECF3; border-radius:13px; padding:4px;
+}
+.tab{
+  position:relative; z-index:1;
+  display:flex; align-items:center; gap:7px;
+  padding:8px 18px; border-radius:10px;
+  font-size:13.5px; font-weight:700; color:var(--slate);
+  transition:color .25s;
+}
+.tab i{font-size:16px}
+.tab.active{color:var(--ink2)}
+.tab-ind{
+  position:absolute; top:4px; bottom:4px; left:0; width:0;
+  background:#fff; border-radius:10px;
+  box-shadow:0 3px 10px -2px rgba(15,23,42,.18);
+  transition:transform .35s cubic-bezier(.4,1.4,.4,1), width .35s cubic-bezier(.4,1.4,.4,1);
+}
+.save-chip{
+  display:flex; align-items:center; gap:7px;
+  font-size:11.5px; font-weight:700; color:var(--slate);
+  background:#fff; border:1px solid var(--line);
+  padding:7px 13px; border-radius:99px; white-space:nowrap;
+}
+.save-dot{width:8px; height:8px; border-radius:50%; background:var(--cyan)}
+.save-chip.flash .save-dot{animation:pulse .9s}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(14,165,233,.55)}100%{box-shadow:0 0 0 11px rgba(14,165,233,0)}}
+.ibtn-lock{
+  width:38px; height:38px; border-radius:11px;
+  background:#fff; border:1px solid var(--line);
+  display:grid; place-items:center; font-size:17px; color:var(--slate);
+  transition:.2s;
+}
+.ibtn-lock:hover{color:var(--red); border-color:#F5C6C6; background:#FEF5F5; transform:translateY(-1px)}
+
+main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:30px 0 70px}
+.page{display:none}
+.page.on{display:block}
+.page.anim{animation:pagein .38s ease}
+@keyframes pagein{from{opacity:0; transform:translateY(12px)}}
+
+.page-head{
+  display:flex; align-items:flex-end; justify-content:space-between;
+  gap:16px; flex-wrap:wrap; margin-bottom:20px;
+}
+.page-head h1{font-size:26px; font-weight:900; display:flex; align-items:center; gap:10px}
+.page-head h1::before{content:''; width:8px; height:8px; border-radius:50%; background:var(--cyan); box-shadow:0 0 0 4px rgba(14,165,233,.18)}
+.page-head .sub{color:var(--slate); font-size:13px; font-weight:600; margin-top:3px}
+.month-nav{
+  display:flex; align-items:center; gap:8px;
+  background:#fff; border:1px solid var(--line); border-radius:12px; padding:5px;
+}
+.month-nav>b{font-size:14px; font-weight:800; min-width:120px; text-align:center}
+.mnav{
+  width:32px; height:32px; border-radius:9px; display:grid; place-items:center;
+  font-size:15px; color:var(--slate); transition:.15s;
+}
+.mnav:hover:not(:disabled){background:var(--cyan-bg); color:var(--cyan-d)}
+.mnav:disabled{opacity:.3; cursor:default}
+
+/* ================== البطاقات ================== */
+.card{
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.9);
+  border-radius:20px;
+  box-shadow:var(--shadow);
+}
+.card-head{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px}
+.card-head h2{font-size:15.5px; font-weight:800}
+.card-head h2 i{color:var(--cyan); margin-inline-end:6px}
+
+.legend{display:flex; gap:14px; flex-wrap:wrap}
+.lg{display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--slate)}
+.sw{width:14px; height:14px; border-radius:5px}
+.sw.done{background:var(--cyan)}
+.sw.miss{background:var(--ink)}
+.sw.empty{background:#fff; border:1.5px solid #C9D4E0}
+.sw.neutral{background:#E8EDF3}
+
+/* ================== لوحة الإنجاز ================== */
+.alert-bar{
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  background:var(--cyan-bg); border:1px solid #BEE7FB;
+  border-inline-start:4px solid var(--cyan);
+  border-radius:16px; padding:13px 18px; margin-bottom:18px;
+  animation:pagein .4s;
+}
+.al-ic{font-size:24px; color:var(--cyan); animation:ring 2.4s ease infinite; transform-origin:top}
+@keyframes ring{0%,100%{transform:rotate(0)}5%{transform:rotate(12deg)}10%{transform:rotate(-10deg)}15%{transform:rotate(8deg)}20%{transform:rotate(-6deg)}25%{transform:rotate(0)}}
+.al-text{font-size:13.5px; font-weight:600; color:var(--ink2); flex:1; min-width:200px}
+.al-chips{display:flex; gap:6px; flex-wrap:wrap}
+.al-chips button{
+  background:#fff; border:1px solid #A9DDF8; color:var(--cyan-d);
+  font-size:12px; font-weight:800; padding:4px 12px; border-radius:99px; transition:.15s;
+}
+.al-chips button:hover{background:var(--cyan); color:#fff; border-color:var(--cyan)}
+
+.dash-grid{display:grid; grid-template-columns:345px 1fr; gap:18px; margin-bottom:18px}
+
+.ring-card{padding:26px; display:flex; flex-direction:column; align-items:center; gap:18px;
+  background-image:radial-gradient(circle, #E7EDF4 1px, transparent 1px); background-size:16px 16px;}
+.ring-wrap{position:relative; width:220px; height:220px}
+.ring-wrap svg{transform:rotate(0)}
+.ring-ticks{stroke:#C6D2E0; stroke-width:2; stroke-dasharray:1.5 7.2; fill:none}
+.ring-bg{stroke:#E6ECF3; stroke-width:14; fill:none}
+#ringFg{stroke:var(--cyan); stroke-width:14; fill:none; stroke-linecap:round}
+.ring-c{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center}
+.ring-c b{font-size:52px; font-weight:900; line-height:1; color:var(--ink2)}
+.ring-c span{font-size:12.5px; font-weight:700; color:var(--slate); margin-top:4px}
+.ring-note{font-size:12px; color:var(--slate); font-weight:600; text-align:center; margin-top:-6px}
+.mini-stats{width:100%; display:flex; gap:10px}
+.mini-stats>div{
+  flex:1; background:#fff; border:1px solid var(--line); border-radius:14px;
+  padding:11px 14px; display:flex; flex-direction:column; gap:2px;
+}
+.mini-stats b{font-size:19px; font-weight:900; display:flex; align-items:center; gap:6px}
+.mini-stats b i{color:var(--cyan); font-size:17px}
+.mini-stats span{font-size:10.5px; font-weight:700; color:var(--slate-l)}
+
+.chart-card{padding:22px 24px 18px}
+.chart-box{position:relative; height:280px}
+#chartEmpty{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--slate); font-weight:600; font-size:13.5px; gap:8px}
+
+.map-card{padding:22px 24px}
+.month-map{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px}
+.mm{width:22px; height:22px; border-radius:8px; padding:0; display:grid; place-items:center; transition:.15s}
+.mm:hover{transform:scale(1.25); z-index:2}
+.mm span{width:8px; height:8px; border-radius:50%}
+.mm-full{background:var(--cyan)}
+.mm-full span{background:transparent}
+.mm-part{background:#D6F0FD; border:1.5px solid var(--cyan)}
+.mm-part span{background:var(--cyan); width:5px; height:5px}
+.mm-e{background:#fff; border:1.5px solid #C9D4E0}
+.mm-e span{background:transparent}
+.mm-f{background:#EFF3F8}
+.mm-x{background:#E8EDF3; opacity:.55}
+.mm-today{box-shadow:0 0 0 3px rgba(14,165,233,.3)}
+.map-legend{display:flex; gap:13px; flex-wrap:wrap; font-size:11px; font-weight:700; color:var(--slate)}
+.map-legend .d{width:11px; height:11px; border-radius:4px; display:inline-block; margin-inline-end:5px; vertical-align:-1px}
+
+/* ================== شبكة التتبع ================== */
+.grid-wrap{
+  overflow:auto; max-height:calc(100vh - 275px); min-height:320px;
+  border-radius:18px; border:1px solid var(--line);
+  background:#fff; box-shadow:var(--shadow);
+  touch-action:pan-x pan-y;
+}
+.grid{border-collapse:separate; border-spacing:0; min-width:1480px; width:100%}
+.grid th,.grid td{border-block-end:1px solid #EDF1F6; border-inline-start:1px solid #EDF1F6}
+.grid .no-b{border-inline-start:none}
+
+.grid thead th{
+  position:sticky; top:0; z-index:5;
+  background:#F8FAFD; height:52px; font-weight:800;
+}
+.grid thead th:first-child{right:0; z-index:7}
+.d-head{width:44px; min-width:44px; text-align:center; line-height:1.15}
+.d-head b{display:block; font-size:13px; color:var(--ink2)}
+.d-head span{display:block; font-size:9px; color:var(--slate-l); font-weight:700}
+.d-head.neutral{background:#EDF1F6}
+.d-head.future b{color:#B9C5D3}
+.d-head.today{background:var(--cyan-bg)}
+.d-head.today b{color:var(--cyan-d)}
+.d-head.today span{color:var(--cyan)}
+
+tbody th{position:sticky; right:0; z-index:4; background:#fff}
+th.h-name{width:60px; min-width:60px; text-align:center; cursor:context-menu; padding:6px 0}
+.h-ic{
+  display:inline-grid; place-items:center; width:38px; height:38px;
+  border-radius:11px; background:#F1F5F9; color:#334155; font-size:19px; transition:.18s;
+}
+th.h-name:hover .h-ic{background:var(--cyan); color:#fff; transform:translateY(-1px)}
+.h-ic.xl{width:64px; height:64px; border-radius:18px; font-size:32px; margin-bottom:10px}
+
+td.cell{
+  width:44px; min-width:44px; height:42px; text-align:center;
+  position:relative; font-size:14px; user-select:none;
+  -webkit-touch-callout:none;
+  transition:background .15s;
+}
+td.cell.empty{cursor:pointer}
+td.cell.empty:hover{background:#EAF7FE}
+td.cell.empty.today{background:#F2FAFE}
+td.cell.empty.today:hover{background:#E2F5FE}
+td.cell.done{background:var(--cyan); color:#fff; cursor:pointer}
+td.cell.done:hover{background:#009BDD}
+td.cell.miss{background:var(--ink); color:#fff; cursor:pointer}
+td.cell.miss:hover{background:#33333B}
+td.cell.neutral{background:#EDF1F6}
+td.cell.future{background:#FAFBFD}
+.neu-dot{display:inline-block; width:5px; height:5px; border-radius:50%; background:#C4CFDB}
+.note-dot{position:absolute; top:5px; inset-inline-start:5px; width:6px; height:6px; border-radius:50%; background:var(--cyan)}
+td.cell.done .note-dot{background:#fff}
+td.cell.pop{animation:cellpop .3s}
+@keyframes cellpop{40%{transform:scale(.8)}}
+td.cell.flash, th.d-head.flash{animation:colflash 1.5s ease}
+@keyframes colflash{
+  0%,35%{box-shadow:inset 0 0 0 2.5px var(--cyan), inset 0 0 14px rgba(14,165,233,.4)}
+  100%{box-shadow:inset 0 0 0 0 rgba(0,0,0,0)}
+}
+
+.sum-row td,.sum-row th{
+  position:sticky; bottom:0; z-index:5; background:#FBFCFE;
+  height:30px; font-size:10.5px; font-weight:800; text-align:center;
+}
+.sum-row th{right:0; z-index:7; font-size:11px; color:var(--slate)}
+.sum-c.f{color:var(--cyan-d)}
+.sum-c.p{color:var(--slate)}
+.sum-c.e{color:#C4CFDB}
+.sum-c.n{color:#DDE4EC}
+
+.hint{display:flex; align-items:center; gap:8px; color:var(--slate); font-size:12.5px; font-weight:600; margin-top:14px}
+.hint i{color:var(--cyan); font-size:16px}
+
+.empty{display:flex; flex-direction:column; align-items:center; gap:12px; padding:56px 20px; text-align:center}
+.empty i{font-size:42px; color:#C9D4E0}
+.empty p{color:var(--slate); font-weight:600; font-size:14px; max-width:340px}
+
+/* ================== لوحة التحكم ================== */
+.admin-grid{display:grid; grid-template-columns:390px 1fr; gap:18px; align-items:start}
+.form-card{padding:24px}
+.form-card h2{font-size:17px; font-weight:900; margin-bottom:18px; display:flex; align-items:center; gap:8px}
+.form-card h2 i{color:var(--cyan)}
+.form-card label{display:block; font-size:12.5px; font-weight:800; color:var(--ink2); margin-bottom:14px}
+.form-card .lbl{font-size:12.5px; font-weight:800; color:var(--ink2); margin-bottom:8px}
+input[type=text],textarea{
+  width:100%; margin-top:6px; border:1.5px solid var(--line); border-radius:11px;
+  padding:10px 14px; font-size:13.5px; font-weight:600; color:var(--ink2);
+  background:#FBFCFE; transition:.2s; resize:vertical;
+}
+input[type=text]:focus,textarea:focus,.lock-field:focus-within input{outline:none}
+input[type=text]:focus,textarea:focus{border-color:var(--cyan); box-shadow:0 0 0 3.5px rgba(14,165,233,.13); background:#fff}
+.icon-pick{display:grid; grid-template-columns:repeat(8,1fr); gap:7px; margin-bottom:18px}
+.icon-pick button{
+  aspect-ratio:1; border-radius:10px; border:1.5px solid var(--line);
+  background:#FBFCFE; font-size:18px; color:var(--slate); display:grid; place-items:center; transition:.15s;
+}
+.icon-pick button:hover{border-color:var(--cyan); color:var(--cyan); transform:translateY(-2px)}
+.icon-pick button.sel{background:var(--cyan); border-color:var(--cyan); color:#fff; transform:none}
+.form-actions{display:flex; gap:10px}
+.danger-zone{
+  margin-top:22px; padding-top:18px; border-top:1px dashed #F0D5D5;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.danger-zone b{font-size:13px; font-weight:800; color:var(--red); display:block}
+.danger-zone small{font-size:11px; color:var(--slate); font-weight:600}
+
+.list-card{padding:24px}
+.cnt{font-size:12px; font-weight:800; color:var(--cyan-d); background:var(--cyan-bg); padding:4px 12px; border-radius:99px}
+.hrow{
+  display:flex; align-items:center; gap:14px;
+  padding:14px 6px; border-block-end:1px solid #EEF2F7; transition:background .15s;
+}
+.hrow:last-child{border-block-end:none}
+.hrow:hover{background:#FAFCFE}
+.h-meta{flex:1; min-width:0}
+.h-meta b{font-size:14.5px; font-weight:800; display:block}
+.h-meta small{font-size:12px; color:var(--slate); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; max-width:100%}
+.h-stat{display:flex; align-items:center; gap:9px; width:150px; flex-shrink:0}
+.h-stat small{font-size:11.5px; font-weight:800; color:var(--slate); min-width:34px; text-align:left}
+.bar{flex:1; height:6px; border-radius:99px; background:#EAF0F6; overflow:hidden}
+.bar span{display:block; height:100%; border-radius:99px; background:var(--cyan); transition:width .6s ease}
+.h-act{display:flex; gap:6px}
+.ibtn{
+  width:34px; height:34px; border-radius:10px; border:1px solid var(--line);
+  background:#fff; display:grid; place-items:center; font-size:15px; color:var(--slate); transition:.15s;
+}
+.ibtn.edit:hover{border-color:var(--cyan); color:var(--cyan); background:var(--cyan-bg)}
+.ibtn.del:hover{border-color:#F5C6C6; color:var(--red); background:#FEF5F5}
+
+/* ================== الأزرار ================== */
+.btn{
+  padding:10px 22px; border-radius:12px; font-size:13.5px; font-weight:800;
+  transition:.2s; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+}
+.btn:active{transform:scale(.97)}
+.btn.dark{background:var(--ink); color:#fff}
+.btn.dark:hover{transform:translateY(-1.5px); box-shadow:0 10px 22px -8px rgba(30,30,36,.55)}
+.btn.cyan{background:var(--cyan); color:#fff}
+.btn.cyan:hover{background:var(--cyan-d); transform:translateY(-1.5px); box-shadow:0 10px 22px -8px rgba(14,165,233,.6)}
+.btn.ghost{background:#fff; border:1.5px solid var(--line); color:var(--slate)}
+.btn.ghost:hover{border-color:var(--slate-l); color:var(--ink2)}
+.btn.danger{background:var(--red); color:#fff}
+.btn.danger:hover{background:#B91C1C; transform:translateY(-1.5px)}
+.btn.sm{padding:8px 16px; font-size:12.5px}
+.btn:disabled{opacity:.45; cursor:default; transform:none !important; box-shadow:none !important}
+
+/* ================== المودال ================== */
+#modalRoot{position:fixed; inset:0; z-index:90; display:flex; align-items:center; justify-content:center; padding:20px}
+.m-back{position:absolute; inset:0; background:rgba(15,23,42,.45); backdrop-filter:blur(4px); animation:fadein .25s}
+@keyframes fadein{from{opacity:0}}
+.m-card{
+  position:relative; background:#fff; border-radius:22px; width:min(460px,100%);
+  padding:26px 26px 22px; box-shadow:0 30px 80px -20px rgba(15,23,42,.4);
+  animation:pop .32s cubic-bezier(.2,1.25,.35,1);
+}
+@keyframes pop{from{transform:scale(.9) translateY(16px); opacity:0}}
+.m-title{font-size:18px; font-weight:900; margin-bottom:4px}
+.m-sub{display:flex; align-items:center; gap:8px; color:var(--slate); font-size:12.5px; font-weight:700; margin-bottom:16px}
+.m-sub i{color:var(--cyan); font-size:15px}
+.m-text{color:var(--slate); font-size:13.5px; font-weight:600; line-height:1.9; margin-bottom:6px}
+.m-actions{display:flex; gap:10px; justify-content:flex-start; margin-top:18px}
+.m-card textarea{margin-top:0; background:#FBFCFE}
+.m-req{
+  display:flex; align-items:center; gap:6px; color:var(--red); font-size:12px; font-weight:700; margin-top:8px;
+}
+.m-req i{font-size:14px}
+.note-view{
+  background:#F8FAFC; border-inline-start:3.5px solid var(--cyan);
+  border-radius:12px; padding:15px 17px; font-size:14px; font-weight:600;
+  line-height:1.95; color:var(--ink2); margin-bottom:14px;
+}
+.note-meta{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap}
+.pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:800; padding:5px 13px; border-radius:99px}
+.pill.ok{background:var(--cyan-bg); color:var(--cyan-d)}
+.pill.bad{background:#F1F3F7; color:var(--ink)}
+.h-mini{display:flex; align-items:center; gap:9px; font-size:13px; font-weight:800}
+.hb-pop{text-align:center}
+.hb-stat{background:#F8FAFC; border-radius:14px; padding:15px 17px; margin-top:14px; text-align:start}
+.hb-row{display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--slate); margin-bottom:9px}
+.hb-row b{color:var(--ink2); font-size:14px; font-weight:900}
+.hb-since{display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--slate-l); font-weight:700; margin-top:13px; justify-content:center}
+.hb-since i{color:var(--cyan)}
+
+/* ================== قائمة السياق والتلميح والتنبيهات ================== */
+#ctxMenu{
+  position:fixed; z-index:95; background:#fff; border:1px solid var(--line);
+  border-radius:14px; box-shadow:0 16px 44px -12px rgba(15,23,42,.35);
+  padding:6px; min-width:200px; animation:pop .18s cubic-bezier(.2,1.2,.35,1);
+}
+#ctxMenu button{
+  display:flex; align-items:center; gap:10px; width:100%;
+  padding:9px 13px; border-radius:9px; font-size:13px; font-weight:700; color:var(--ink2); transition:.12s;
+}
+#ctxMenu button i{font-size:16px; color:var(--slate)}
+#ctxMenu button:hover{background:var(--cyan-bg); color:var(--cyan-d)}
+#ctxMenu button:hover i{color:var(--cyan-d)}
+#ctxMenu button.dg, #ctxMenu button.dg i{color:var(--red)}
+#ctxMenu button.dg:hover{background:#FDECEC}
+
+#tip{
+  position:fixed; z-index:150; transform:translate(-50%,-100%);
+  background:var(--ink); color:#fff; font-size:12px; font-weight:700;
+  padding:6px 12px; border-radius:9px; pointer-events:none; white-space:nowrap;
+  animation:fadein .15s;
+}
+#tip::after{
+  content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+  border:5px solid transparent; border-top-color:var(--ink);
+}
+
+#toastRoot{position:fixed; bottom:22px; left:22px; z-index:120; display:flex; flex-direction:column; gap:10px}
+.toast{
+  display:flex; align-items:center; gap:10px;
+  background:var(--ink); color:#fff; padding:12px 19px; border-radius:13px;
+  font-size:13px; font-weight:700; box-shadow:0 14px 34px -10px rgba(15,23,42,.45);
+  transform:translateY(18px); opacity:0; transition:.3s cubic-bezier(.2,1.2,.35,1);
+}
+.toast.in{transform:none; opacity:1}
+.toast i{color:#38D0FF; font-size:17px}
+
+/* ================== استجابة الشاشات ================== */
+@media (max-width:1020px){
+  .dash-grid,.admin-grid{grid-template-columns:1fr}
+  .form-card{order:1}.list-card{order:2}
+}
+@media (max-width:640px){
+  .header-in{gap:10px}
+  .brand small{display:none}
+  .tab{padding:8px 12px; font-size:12.5px}
+  .tab i{display:none}
+  .save-chip span{display:none}
+  .page-head h1{font-size:21px}
+  .ring-wrap{transform:scale(.85)}
+  .mini-stats{flex-direction:column}
+  .h-stat{width:110px}
+  .h-meta small{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ شاشة القفل ============ -->
+<div id="lockScreen">
+  <div class="lock-card" id="lockCard">
+    <div class="lock-logo"><i class="ph-fill ph-lock-key" id="lockIcon"></i></div>
+    <h1>نَبْض</h1>
+    <svg class="ecg" viewBox="0 0 220 40" width="220" height="38" aria-hidden="true">
+      <path pathLength="100" d="M0 20 H68 L80 20 88 6 99 34 107 20 H146 L154 11 162 20 H220"
+            fill="none" stroke="#0EA5E9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <p class="lk-sub">متتبع العادات الشخصي — أدخل كلمة المرور للمتابعة</p>
+    <div class="lock-field">
+      <i class="ph ph-shield-star"></i>
+      <input type="password" id="pwInput" placeholder="كلمة المرور" autocomplete="current-password">
+      <button id="pwToggle" aria-label="إظهار كلمة المرور"><i class="ph ph-eye"></i></button>
+    </div>
+    <p class="lock-err" id="lockErr"><i class="ph ph-warning"></i><span>كلمة المرور غير صحيحة، حاول مجدداً</span></p>
+    <button class="lock-btn" id="lockBtn">فتح لوحة المتابعة</button>
+    <p class="lock-hint"><i class="ph ph-hard-drives"></i> جميع بياناتك محفوظة محلياً في هذا المتصفح فقط</p>
+  </div>
+</div>
+
+<!-- ============ التطبيق ============ -->
+<div id="app">
+  <header>
+    <div class="header-in">
+      <div class="brand">
+        <span class="brand-mark"><i class="ph-fill ph-pulse"></i></span>
+        <div><b>نَبْض</b><small>متتبع العادات الشخصي</small></div>
+      </div>
+      <nav class="tabs" id="tabs">
+        <span class="tab-ind" id="tabInd"></span>
+        <button class="tab active" data-page="dashboard"><i class="ph ph-squares-four"></i>الرئيسية</button>
+        <button class="tab" data-page="tracker"><i class="ph ph-table"></i>التتبع</button>
+        <button class="tab" data-page="admin"><i class="ph ph-gear-six"></i>التحكم</button>
+      </nav>
+      <div class="save-chip" id="saveChip"><span class="save-dot"></span><span>الحفظ التلقائي مفعّل</span></div>
+      <button class="ibtn-lock" id="lockOutBtn" data-tip="قفل التطبيق"><i class="ph ph-lock-key"></i></button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ====== لوحة الإنجاز ====== -->
+    <section id="page-dashboard" class="page on">
+      <div class="page-head">
+        <div><h1>لوحة الإنجاز</h1><p class="sub">نظرة شاملة على التزامك وتراكم عاداتك</p></div>
+        <div class="month-nav">
+          <button class="mnav prev" aria-label="الشهر السابق"><i class="ph-bold ph-caret-right"></i></button>
+          <b id="dashMonth"></b>
+          <button class="mnav next" aria-label="الشهر التالي"><i class="ph-bold ph-caret-left"></i></button>
+        </div>
+      </div>
+
+      <div class="alert-bar" id="alertBar" hidden>
+        <i class="ph-fill ph-bell-ringing al-ic"></i>
+        <p class="al-text" id="alText"></p>
+        <div class="al-chips" id="alChips"></div>
+        <button class="btn cyan sm" id="alGo"><i class="ph ph-pencil-circle"></i>ابدأ التسجيل</button>
+      </div>
+
+      <div class="dash-grid">
+        <div class="card ring-card">
+          <div class="ring-wrap">
+            <svg width="220" height="220" viewBox="0 0 220 220">
+              <circle class="ring-ticks" cx="110" cy="110" r="105"/>
+              <circle class="ring-bg" cx="110" cy="110" r="86"/>
+              <circle id="ringFg" cx="110" cy="110" r="86" transform="rotate(-90 110 110)"/>
+            </svg>
+            <div class="ring-c"><b id="ringPct">٠</b><span>نسبة الإنجاز</span></div>
+          </div>
+          <p class="ring-note" id="ringNote" hidden>أضف عاداتك من لوحة التحكم لبدء التتبع</p>
+          <div class="mini-stats">
+            <div><b><i class="ph-fill ph-flame"></i><span id="statStreak">٠</span></b><span>أيام مثالية متتالية</span></div>
+            <div><b><i class="ph-fill ph-check-circle"></i><span id="statDone">٠ / ٠</span></b><span>خلايا منجزة هذا الشهر</span></div>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-head">
+            <h2><i class="ph-fill ph-chart-bar"></i>الإنجاز اليومي خلال الشهر</h2>
+            <div class="legend">
+              <span class="lg"><span class="sw" style="background:var(--cyan)"></span>مكتمل ١٠٠٪</span>
+              <span class="lg"><span class="sw" style="background:var(--ink)"></span>منجز جزئياً</span>
+              <span class="lg"><span class="sw" style="background:#D9E2EC"></span>لم يُسجّل</span>
+            </div>
+          </div>
+          <div class="chart-box">
+            <canvas id="chart"></canvas>
+            <div id="chartEmpty" hidden><i class="ph ph-chart-bar"></i>لا توجد بيانات للعرض بعد</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card map-card">
+        <div class="card-head">
+          <h2><i class="ph-fill ph-calendar-check"></i>خريطة الشهر</h2>
+          <div class="map-legend">
+            <span><span class="d" style="background:var(--cyan)"></span>مثالي</span>
+            <span><span class="d" style="background:#D6F0FD;border:1.5px solid var(--cyan)"></span>مسجّل جزئياً</span>
+            <span><span class="d" style="background:#fff;border:1.5px solid #C9D4E0"></span>بانتظار التسجيل</span>
+            <span><span class="d" style="background:#EFF3F8"></span>قادم</span>
+            <span><span class="d" style="background:#E8EDF3"></span>قبل بدء الاستخدام</span>
+          </div>
+        </div>
+        <div class="month-map" id="monthMap"></div>
+      </div>
+    </section>
+
+    <!-- ====== شبكة التتبع ====== -->
+    <section id="page-tracker" class="page">
+      <div class="page-head">
+        <div><h1>شبكة التتبع</h1><p class="sub">حدّد إنجازك يوماً بيوم — كل خانة تحكي قصة</p></div>
+        <div class="month-nav">
+          <button class="mnav prev" aria-label="الشهر السابق"><i class="ph-bold ph-caret-right"></i></button>
+          <b id="trkMonth"></b>
+          <button class="mnav next" aria-label="الشهر التالي"><i class="ph-bold ph-caret-left"></i></button>
+        </div>
+      </div>
+
+      <div class="grid-wrap" id="gridWrap">
+        <table class="grid"><thead id="trkHead"></thead><tbody id="trkBody"></tbody></table>
+        <div class="empty" id="trkEmpty" hidden>
+          <i class="ph ph-sparkle"></i>
+          <p>لا توجد عادات بعد. أضف عادتك الأولى من لوحة التحكم لتبدأ رحلة الالتزام.</p>
+          <button class="btn dark" id="goAdminBtn"><i class="ph ph-gear-six"></i>الانتقال إلى لوحة التحكم</button>
+        </div>
+      </div>
+      <p class="hint"><i class="ph ph-cursor-click"></i> نقرة واحدة على الخلية للتبديل بين الحالات · كليك يمين (أو ضغطة مطوّلة على الجوال) لعرض الملاحظات والخيارات · كليك يمين على أيقونة العادة لعرض تفاصيلها</p>
+    </section>
+
+    <!-- ====== لوحة التحكم ====== -->
+    <section id="page-admin" class="page">
+      <div class="page-head">
+        <div><h1>لوحة التحكم</h1><p class="sub">إدارة العادات وأيقوناتها وأوصافها التفصيلية</p></div>
+      </div>
+      <div class="admin-grid">
+        <form class="card form-card" id="hForm">
+          <h2><i class="ph-fill ph-plus-circle"></i><span id="formTitle">إضافة عادة جديدة</span></h2>
+          <label>اسم العادة
+            <input type="text" id="fName" maxlength="40" placeholder="مثال: قراءة ٢٠ صفحة">
+          </label>
+          <label>وصف تفصيلي
+            <textarea id="fDesc" rows="3" maxlength="220" placeholder="متى تُمارس؟ كيف؟ ما الهدف منها؟"></textarea>
+          </label>
+          <div class="lbl">أيقونة العادة</div>
+          <div class="icon-pick" id="iconPick"></div>
+          <div class="form-actions">
+            <button class="btn dark" type="submit" id="fSubmit"><i class="ph ph-check"></i>إضافة العادة</button>
+            <button class="btn ghost" type="button" id="fCancel" hidden>إلغاء التعديل</button>
+          </div>
+          <div class="danger-zone">
+            <div><b>منطقة الخطر</b><small>مسح نهائي لكل العادات والسجلات والملاحظات</small></div>
+            <button type="button" class="btn danger sm" id="wipeBtn"><i class="ph ph-clock-counter-clockwise"></i>إعادة تعيين</button>
+          </div>
+        </form>
+
+        <div class="card list-card">
+          <div class="card-head">
+            <h2><i class="ph-fill ph-list-checks"></i>العادات الحالية</h2>
+            <span class="cnt" id="hCount">٠</span>
+          </div>
+          <div id="hList"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="modalRoot"></div>
+<div id="ctxMenu" hidden></div>
+<div id="tip" hidden></div>
+<div id="toastRoot"></div>
+
+<script>
+/* ==================== أدوات مساعدة ==================== */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const arNum = n => Number(n).toLocaleString('ar-EG');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtKey = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const today = () => { const t = new Date(); t.setHours(0,0,0,0); return t; };
+const keyToDate = k => new Date(k+'T00:00:00');
+const monthDays = (y,m) => new Date(y, m+1, 0).getDate();
+const monthName = (y,m) => new Date(y,m,1).toLocaleDateString('ar',{month:'long', year:'numeric'});
+const dateAr = d => d.toLocaleDateString('ar',{weekday:'long', day:'numeric', month:'long'});
+const wdF = new Intl.DateTimeFormat('ar',{weekday:'short'});
+const monthShortF = new Intl.DateTimeFormat('ar',{month:'long'});
+
+/* ==================== الحالة والتخزين ==================== */
+const LS = { habits:'hzt_habits', records:'hzt_records', auth:'hzt_auth', start:'hzt_start' };
+const PASSWORD = 'mazen1.1';
+const ICONS = ['dumbbell','book-open','drop','moon-stars','code','heartbeat','brain','plant','sun','pen-nib',
+               'bicycle','bowl-food','coffee','timer','medal','music-notes','person-simple-walk','shield-check',
+               'lightbulb','target','flame','gauge','calculator','chat-circle-text'];
+const DEFAULT_HABITS = [
+  {name:'قراءة ٢٠ صفحة',  desc:'قراءة كتاب يومياً قبل النوم — عشرون صفحة على الأقل دون مقاطعة.', icon:'book-open'},
+  {name:'تمرين رياضي',    desc:'ثلاثون دقيقة من التمارين: مقاومة أو كارديو حسب جدول اليوم.', icon:'dumbbell'},
+  {name:'شرب ٨ أكواب ماء', desc:'الالتزام بشرب ثمانية أكواب ماء موزعة على ساعات اليوم.', icon:'drop'},
+  {name:'نوم مبكر',       desc:'النوم قبل منتصف الليل للحفاظ على الطاقة والتركيز.', icon:'moon-stars'},
+  {name:'تعلّم وبرمجة',   desc:'ساعة على الأقل من التعلّم العميق أو كتابة الكود يومياً.', icon:'code'},
+];
+
+let habits = [], records = {}, startDateD = null, authed = false;
+let view = { y: today().getFullYear(), m: today().getMonth() };
+let currentPage = 'dashboard';
+let chart = null, rafId = null;
+let selIcon = 'dumbbell', editingHabitId = null;
+let pendingFocusDay = null;
+
+function load(){
+  try{ habits = JSON.parse(localStorage.getItem(LS.habits)) || null; }catch(e){ habits = null; }
+  try{ records = JSON.parse(localStorage.getItem(LS.records)) || {}; }catch(e){ records = {}; }
+  const s = localStorage.getItem(LS.start);
+  startDateD = s ? keyToDate(s) : null;
+  authed = localStorage.getItem(LS.auth) === '1';
+  if(!habits || !startDateD) seed();
+}
+function save(){
+  localStorage.setItem(LS.habits,  JSON.stringify(habits));
+  localStorage.setItem(LS.records, JSON.stringify(records));
+  const c = $('#saveChip'); c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash');
+}
+function setAuth(v){ authed = v; localStorage.setItem(LS.auth, v ? '1' : '0'); }
+function seed(){
+  startDateD = today();
+  localStorage.setItem(LS.start, fmtKey(startDateD));
+  habits = DEFAULT_HABITS.map((h,i) => ({ id:'h'+Date.now()+i, createdAt:Date.now(), ...h }));
+  records = {};
+  save();
+}
+
+/* ==================== منطق الأيام والنسب ==================== */
+const habitById = id => habits.find(h => h.id === id);
+function keyStatus(key){
+  if(startDateD && key < fmtKey(startDateD)) return 'neutral';
+  if(key > fmtKey(today())) return 'future';
+  return 'open';
+}
+function dayStats(key){
+  const r = records[key] || {}; let done = 0, miss = 0;
+  habits.forEach(h => { const v = r[h.id]; if(v){ v.s === 'done' ? done++ : miss++; } });
+  return { done, miss, recorded: done + miss, total: habits.length };
+}
+function monthProgress(y, m){
+  let avail = 0, done = 0;
+  const last = monthDays(y, m);
+  for(let d = 1; d <= last; d++){
+    const key = fmtKey(new Date(y, m, d));
+    if(keyStatus(key) !== 'open') continue;
+    avail += habits.length;
+    done += dayStats(key).done;
+  }
+  return { avail, done, pct: avail ? Math.round(done / avail * 100) : 0 };
+}
+function currentStreak(){
+  let s = 0; const d = today();
+  const ts = dayStats(fmtKey(d));
+  if(ts.total > 0 && ts.done < ts.total) d.setDate(d.getDate() - 1); // اليوم لم يُحسم بعد
+  while(true){
+    if(startDateD && d < startDateD) break;
+    const st = dayStats(fmtKey(d));
+    if(st.total > 0 && st.done === st.total){ s++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  return s;
+}
+function incompleteDays(){
+  const out = [], end = today(), cur = new Date(startDateD);
+  while(cur <= end){
+    const st = dayStats(fmtKey(cur));
+    if(st.total > 0 && st.recorded < st.total) out.push(new Date(cur));
+    cur.setDate(cur.getDate() + 1);
+  }
+  return out;
+}
+function habitPct(id){
+  let done = 0, miss = 0;
+  for(const key in records){ const v = records[key][id]; if(v){ v.s === 'done' ? done++ : miss++; } }
+  return (done + miss) ? Math.round(done / (done + miss) * 100) : null;
+}
+
+/* ==================== التنقل بين الصفحات ==================== */
+function moveInd(){
+  const btn = $('.tab.active'), ind = $('#tabInd');
+  if(!btn) return;
+  ind.style.width = btn.offsetWidth + 'px';
+  ind.style.transform = `translateX(${btn.offsetLeft}px)`;
+}
+function go(p){
+  currentPage = p;
+  $$('.tab').forEach(b => b.classList.toggle('active', b.dataset.page === p));
+  moveInd(); hideTip(); closeCtx();
+  $$('.page').forEach(s => s.classList.remove('on','anim'));
+  const sec = $('#page-' + p);
+  void sec.offsetWidth; sec.classList.add('on','anim');
+  if(p === 'dashboard') renderDashboard();
+  if(p === 'tracker')   renderTracker();
+  if(p === 'admin')     renderAdmin();
+}
+ $$('.tab').forEach(b => b.addEventListener('click', () => go(b.dataset.page)));
+addEventListener('resize', moveInd);
+
+function updateMonthNav(){
+  const startIdx = startDateD.getFullYear()*12 + startDateD.getMonth();
+  const nowIdx   = today().getFullYear()*12 + today().getMonth();
+  const idx      = view.y*12 + view.m;
+  $$('.mnav.prev').forEach(b => b.disabled = idx <= startIdx);
+  $$('.mnav.next').forEach(b => b.disabled = idx >= nowIdx);
+}
+ $$('.mnav').forEach(b => b.addEventListener('click', () => {
+  let m = view.m + (b.classList.contains('prev') ? -1 : 1), y = view.y;
+  if(m < 0){ m = 11; y--; } if(m > 11){ m = 0; y++; }
+  const startIdx = startDateD.getFullYear()*12 + startDateD.getMonth();
+  const nowIdx = today().getFullYear()*12 + today().getMonth();
+  const idx = y*12 + m;
+  if(idx < startIdx || idx > nowIdx) return;
+  view = { y, m };
+  currentPage === 'dashboard' ? renderDashboard() : renderTracker();
+}));
+
+/* ==================== لوحة الإنجاز ==================== */
+function setRing(p){
+  const CIRC = 2 * Math.PI * 86;
+  const fg = $('#ringFg');
+  fg.style.strokeDasharray = CIRC;
+  cancelAnimationFrame(rafId);
+  const t0 = performance.now(), dur = 1000, target = p.pct;
+  function frame(t){
+    let k = Math.min(1, (t - t0) / dur); k = 1 - Math.pow(1 - k, 3);
+    $('#ringPct').textContent = arNum(Math.round(target * k));
+    fg.style.strokeDashoffset = CIRC * (1 - (target * k / 100));
+    if(k < 1) rafId = requestAnimationFrame(frame);
+  }
+  rafId = requestAnimationFrame(frame);
+}
+function renderDashboard(){
+  hideTip();
+  $('#dashMonth').textContent = monthName(view.y, view.m);
+  updateMonthNav();
+  const p = monthProgress(view.y, view.m);
+  setRing(p);
+  $('#ringNote').hidden = habits.length > 0;
+  $('#statDone').textContent  = `${arNum(p.done)} / ${arNum(p.avail)}`;
+  $('#statStreak').textContent = arNum(currentStreak());
+  renderMonthMap();
+  renderAlert();
+  renderChart();
+}
+function renderMonthMap(){
+  const box = $('#monthMap'); let html = '';
+  const last = monthDays(view.y, view.m), tKey = fmtKey(today());
+  for(let d = 1; d <= last; d++){
+    const key = fmtKey(new Date(view.y, view.m, d));
+    const st = keyStatus(key);
+    let cls, tip;
+    if(st === 'neutral'){ cls = 'mm-x'; tip = 'قبل بدء استخدام التطبيق'; }
+    else if(st === 'future'){ cls = 'mm-f'; tip = 'يوم قادم'; }
+    else{
+      const s = dayStats(key);
+      if(s.recorded === 0){ cls = 'mm-e'; tip = 'لم يُسجّل بعد'; }
+      else if(s.done === s.total){ cls = 'mm-full'; tip = 'مثالي — إنجاز ١٠٠٪'; }
+      else{ cls = 'mm-part'; tip = `إنجاز ${arNum(Math.round(s.done/s.total*100))}٪`; }
+    }
+    if(key === tKey) cls += ' mm-today';
+    html += `<button class="mm ${cls}" data-day="${d}" data-tip="${dateAr(keyToDate(key))} — ${tip}"><span></span></button>`;
+  }
+  box.innerHTML = html;
+}
+ $('#monthMap').addEventListener('click', e => {
+  const b = e.target.closest('.mm');
+  if(b) focusDate(new Date(view.y, view.m, +b.dataset.day));
+});
+function focusDate(dObj){
+  hideTip();
+  view = { y: dObj.getFullYear(), m: dObj.getMonth() };
+  pendingFocusDay = dObj.getDate();
+  go('tracker');
+}
+function renderAlert(){
+  const days = incompleteDays(), bar = $('#alertBar');
+  if(!days.length || !habits.length){ bar.hidden = true; return; }
+  bar.hidden = false;
+  const n = days.length;
+  const word = n === 1 ? 'يوم واحد' : n === 2 ? 'يومين' : `${arNum(n)} أيام`;
+  const hasToday = days.some(d => d.toDateString() === today().toDateString());
+  $('#alText').innerHTML = `لديك <b>${word}</b> بحاجة إلى تسجيل العادات${hasToday ? ' — من بينها <b>يومك الحالي</b>' : ''}. لا تترك أياماً تمر دون حسم.`;
+  $('#alChips').innerHTML = days.slice(-6).map(d => {
+    const lbl = d.toDateString() === today().toDateString() ? 'اليوم'
+              : (new Date(Date.now()-864e5)).toDateString() === d.toDateString() ? 'أمس'
+              : arNum(d.getDate());
+    return `<button data-tip="${dateAr(d)}" data-ts="${fmtKey(d)}">${lbl}</button>`;
+  }).join('');
+}
+ $('#alChips').addEventListener('click', e => {
+  const b = e.target.closest('button[data-ts]');
+  if(b) focusDate(keyToDate(b.dataset.ts));
+});
+ $('#alGo').addEventListener('click', () => focusDate(today()));
+
+let chartObj = null;
+function renderChart(){
+  const cv = $('#chart');
+  if(!habits.length){ if(chartObj){ chartObj.destroy(); chartObj = null; } cv.style.display = 'none'; $('#chartEmpty').hidden = false; return; }
+  cv.style.display = ''; $('#chartEmpty').hidden = true;
+  if(chartObj){ chartObj.destroy(); chartObj = null; }
+  if(typeof Chart === 'undefined') return;
+  Chart.defaults.font.family = "'Cairo', sans-serif";
+  Chart.defaults.font.size = 11;
+  Chart.defaults.color = '#64748B';
+
+  const last = monthDays(view.y, view.m), t = today(), labels = [], data = [], bg = [], bo = [], bw = [];
+  for(let d = 1; d <= last; d++){
+    const dt = new Date(view.y, view.m, d), key = fmtKey(dt);
+    labels.push(arNum(d));
+    if(keyStatus(key) !== 'open'){ data.push(null); bg.push('transparent'); bo.push('transparent'); bw.push(0); continue; }
+    const s = dayStats(key), pct = s.total ? Math.round(s.done / s.total * 100) : 0;
+    data.push(pct);
+    const isToday = key === fmtKey(t);
+    bg.push(pct === 100 ? '#0EA5E9' : s.recorded > 0 ? '#1E1E24' : '#D9E2EC');
+    bo.push(isToday ? '#0EA5E9' : 'transparent');
+    bw.push(isToday ? 2 : 0);
+  }
+  chartObj = new Chart(cv, {
+    type: 'bar',
+    data: { labels, datasets: [{ data, backgroundColor: bg, borderColor: bo, borderWidth: bw, borderRadius: 6, maxBarThickness: 24 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        y: { min: 0, max: 100, ticks: { callback: v => arNum(v), stepSize: 25 }, grid: { color: '#EDF1F6' }, border: { display: false } },
+        x: { ticks: { autoSkip: true, maxTicksLimit: 16, maxRotation: 0 }, grid: { display: false }, border: { display: false } }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          rtl: true, textDirection: 'rtl', displayColors: false,
+          backgroundColor: '#1E1E24', padding: 12, cornerRadius: 10,
+          titleFont: { weight: '800' },
+          callbacks: {
+            title: it => { const i = it[0].dataIndex; return `${wdF.format(new Date(view.y, view.m, i+1))} ${arNum(i+1)} ${monthShortF.format(new Date(view.y, view.m, 1))}`; },
+            label: it => {
+              const i = it.dataIndex, s = dayStats(fmtKey(new Date(view.y, view.m, i+1)));
+              if(!s.total) return '';
+              if(s.recorded === 0) return 'لم يُسجّل بعد';
+              return `إنجاز ${arNum(it.parsed.y)}٪ — ${arNum(s.done)} من ${arNum(s.total)} عادات`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+/* ==================== شبكة التتبع ==================== */
+function cellInner(rec, st){
+  const dot = rec && rec.n ? '<span class="note-dot"></span>' : '';
+  let mark = '';
+  if(rec) mark = rec.s === 'done' ? '<i class="ph-fill ph-check"></i>' : '<i class="ph-fill ph-x"></i>';
+  else if(st === 'neutral') mark = '<span class="neu-dot"></span>';
+  return dot + mark;
+}
+function refreshCell(key, hid){
+  const td = document.querySelector(`td.cell[data-key="${key}"][data-habit="${hid}"]`);
+  if(!td) return;
+  const st = keyStatus(key), rec = (records[key] || {})[hid];
+  td.className = 'cell ' + (st !== 'open' ? st : rec ? rec.s : 'empty') + (key === fmtKey(today()) ? ' today' : '');
+  td.innerHTML = cellInner(rec, st);
+  td.classList.add('pop'); setTimeout(() => td.classList.remove('pop'), 320);
+}
+function refreshSum(key){
+  const td = document.querySelector(`.sum-c[data-key="${key}"]`);
+  if(!td) return;
+  const st = keyStatus(key), s = dayStats(key);
+  let cls = 'n', txt = '·';
+  if(st !== 'open'){ cls = st === 'future' ? 'n' : 'n'; txt = st === 'future' ? '' : '·'; }
+  else if(s.recorded === 0){ cls = 'e'; txt = '–'; }
+  else{
+    const pct = Math.round(s.done / s.total * 100);
+    cls = pct === 100 ? 'f' : 'p'; txt = arNum(pct);
+  }
+  td.className = `sum-c ${cls}`;
+  td.textContent = txt;
+}
+function renderTracker(){
+  hideTip();
+  $('#trkMonth').textContent = monthName(view.y, view.m);
+  updateMonthNav();
+  const table = $('.grid'), emptyEl = $('#trkEmpty');
+  if(!habits.length){ table.style.display = 'none'; emptyEl.hidden = false; return; }
+  table.style.display = ''; emptyEl.hidden = true;
+
+  const last = monthDays(view.y, view.m), tKey = fmtKey(today());
+  let head = '<tr><th class="no-b"><i class="ph ph-list-checks" style="color:var(--cyan)"></i></th>';
+  for(let d = 1; d <= last; d++){
+    const key = fmtKey(new Date(view.y, view.m, d)), st = keyStatus(key);
+    head += `<th class="d-head no-b ${st} ${key === tKey ? 'today' : ''}" data-day="${d}"><b>${arNum(d)}</b><span>${wdF.format(new Date(view.y, view.m, d))}</span></th>`;
+  }
+  $('#trkHead').innerHTML = head + '</tr>';
+
+  let body = '';
+  habits.forEach(h => {
+    body += `<tr><th class="h-name no-b" data-habit="${h.id}" data-tip="${esc(h.name)}"><span class="h-ic"><i class="ph ph-${h.icon}"></i></span></th>`;
+    for(let d = 1; d <= last; d++){
+      const key = fmtKey(new Date(view.y, view.m, d)), st = keyStatus(key);
+      const rec = (records[key] || {})[h.id];
+      const cls = st !== 'open' ? st : rec ? rec.s : 'empty';
+      body += `<td class="cell ${cls} ${key === tKey ? 'today' : ''}" data-day="${d}" data-key="${key}" data-habit="${h.id}">${cellInner(rec, st)}</td>`;
+    }
+    body += '</tr>';
+  });
+  body += '<tr class="sum-row"><th class="no-b">الإنجاز</th>';
+  for(let d = 1; d <= last; d++){
+    const key = fmtKey(new Date(view.y, view.m, d)), st = keyStatus(key), s = dayStats(key);
+    let cls = 'n', txt = st === 'future' ? '' : '·';
+    if(st === 'open'){
+      if(s.recorded === 0){ cls = 'e'; txt = '–'; }
+      else{ const pct = Math.round(s.done / s.total * 100); cls = pct === 100 ? 'f' : 'p'; txt = arNum(pct); }
+    }
+    body += `<td class="sum-c ${cls}" data-key="${key}" data-day="${d}" data-tip="${dateAr(keyToDate(key))}">${txt}</td>`;
+  }
+  $('#trkBody').innerHTML = body + '</tr>';
+
+  if(pendingFocusDay != null){
+    const d = pendingFocusDay; pendingFocusDay = null;
+    requestAnimationFrame(() => {
+      const cell = $(`#trkBody td.cell[data-day="${d}"]`);
+      if(!cell) return;
+      cell.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      $$('.grid [data-day="' + d + '"]').forEach(el => { el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1600); });
+    });
+  }
+}
+ $('#goAdminBtn').addEventListener('click', () => go('admin'));
+
+/* --- تحديد الحالات بالنقر والتدوير --- */
+function setCell(key, hid, val){ (records[key] || (records[key] = {}))[hid] = val; save(); refreshCell(key, hid); refreshSum(key); }
+function clearCell(key, hid){
+  const r = records[key];
+  if(r){ delete r[hid]; if(!Object.keys(r).length) delete records[key]; }
+  save(); refreshCell(key, hid); refreshSum(key);
+}
+function cycleCell(td){
+  const key = td.dataset.key, hid = td.dataset.habit;
+  if(keyStatus(key) !== 'open'){ toast('هذا اليوم خارج نطاق التتبع', 'info'); return; }
+  const rec = (records[key] || {})[hid];
+  if(!rec) setCell(key, hid, { s:'done' });
+  else if(rec.s === 'done') askMiss(key, hid);
+  else clearCell(key, hid);
+}
+
+/* --- أحداث الشبكة --- */
+const gridWrap = $('#gridWrap');
+let lpTimer = null, lpFired = false;
+gridWrap.addEventListener('click', e => {
+  if(lpFired){ e.stopImmediatePropagation(); lpFired = false; return; }
+  const td = e.target.closest('td.cell');
+  if(td) cycleCell(td);
+});
+gridWrap.addEventListener('contextmenu', e => {
+  const td = e.target.closest('td.cell');
+  const th = e.target.closest('th.h-name');
+  if(td){ e.preventDefault(); openCellMenu({ clientX: e.clientX, clientY: e.clientY }, td); }
+  else if(th){ e.preventDefault(); const h = habitById(th.dataset.habit); if(h) habitPopup(h.id); }
+});
+gridWrap.addEventListener('touchstart', e => {
+  const td = e.target.closest('td.cell'); if(!td) return;
+  lpFired = false;
+  const t = e.touches[0];
+  lpTimer = setTimeout(() => { lpFired = true; openCellMenu({ clientX: t.clientX, clientY: t.clientY }, td); }, 480);
+}, { passive: true });
+['touchend','touchmove','touchcancel'].forEach(ev => gridWrap.addEventListener(ev, () => clearTimeout(lpTimer), { passive: true }));
+
+function openCellMenu(pos, td){
+  const key = td.dataset.key, hid = td.dataset.habit;
+  const rec = (records[key] || {})[hid], st = keyStatus(key);
+  const items = [];
+  if(rec && rec.n) items.push({ icon:'eye', label:'عرض الملاحظة', act:() => showNoteModal(key, hid) });
+  if(st !== 'open'){ if(items.length) openCtx(pos.clientX, pos.clientY, items); return; }
+  if(!rec || rec.s !== 'done') items.push({ icon:'check-circle', label:'تحديد كمنجز', act:() => setCell(key, hid, { s:'done' }) });
+  if(!rec || rec.s !== 'miss') items.push({ icon:'x-circle', label:'تحديد كغير منجز', act:() => askMiss(key, hid) });
+  if(rec) items.push({ icon:'note-pencil', label: rec.n ? 'تعديل الملاحظة' : 'إضافة ملاحظة', act:() => editNote(key, hid) });
+  if(rec) items.push({ icon:'eraser', label:'مسح الحالة', danger:true, act:() => clearCell(key, hid) });
+  openCtx(pos.clientX, pos.clientY, items);
+}
+
+/* ==================== قائمة السياق ==================== */
+const ctx = $('#ctxMenu');
+function openCtx(x, y, items){
+  closeCtx();
+  ctx.innerHTML = items.map((it, i) =>
+    `<button data-i="${i}" class="${it.danger ? 'dg' : ''}"><i class="ph ph-${it.icon}"></i>${it.label}</button>`).join('');
+  ctx.hidden = false;
+  const r = ctx.getBoundingClientRect();
+  let L = Math.min(x, innerWidth - r.width - 12), T = y + 8;
+  if(T + r.height > innerHeight - 12) T = y - r.height - 8;
+  ctx.style.left = Math.max(10, L) + 'px';
+  ctx.style.top = Math.max(10, T) + 'px';
+  ctx.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { closeCtx(); items[+b.dataset.i].act(); }));
+}
+function closeCtx(){ ctx.hidden = true; }
+document.addEventListener('pointerdown', e => { if(!ctx.hidden && !ctx.contains(e.target)) closeCtx(); }, true);
+
+/* ==================== التلميحات (Tooltip) ==================== */
+const tip = $('#tip');
+let tipTarget = null;
+document.addEventListener('mouseover', e => {
+  const t = e.target.closest('[data-tip]');
+  if(t && t !== tipTarget){ tipTarget = t; tip.textContent = t.dataset.tip; tip.hidden = false;
+    const r = t.getBoundingClientRect();
+    tip.style.left = (r.left + r.width / 2) + 'px';
+    tip.style.top = (r.top - 9) + 'px';
+  }
+});
+document.addEventListener('mouseout', e => {
+  const t = e.target.closest('[data-tip]');
+  if(t && t === tipTarget){ tipTarget = null; hideTip(); }
+});
+document.addEventListener('scroll', hideTip, true);
+function hideTip(){ tip.hidden = true; tipTarget = null; }
+
+/* ==================== نظام المودالات ==================== */
+const modalRoot = $('#modalRoot');
+const modalOpen = () => !!modalRoot.firstChild;
+function showModal(inner, actionsHtml, dismissable = true){
+  modalRoot.innerHTML = `<div class="m-back" id="mBack"></div><div class="m-card">${inner}<div class="m-actions">${actionsHtml}</div></div>`;
+  if(dismissable) $('#mBack').addEventListener('click', closeModal);
+}
+function closeModal(){ modalRoot.innerHTML = ''; }
+
+function askMiss(key, hid){
+  const h = habitById(hid), old = (records[key] || {})[hid]?.n || '';
+  const d = keyToDate(key);
+  showModal(
+    `<h3 class="m-title">سبب عدم الإنجاز</h3>
+     <p class="m-sub"><i class="ph ph-x-circle"></i>${esc(h.name)} · ${dateAr(d)}</p>
+     <textarea id="mNote" rows="3" placeholder="اكتب سبب عدم الإنجاز أو ملاحظتك…">${esc(old)}</textarea>
+     <p class="m-req" id="mReq" style="display:none"><i class="ph ph-warning"></i>تحديد السبب مطلوب لحفظ عدم الإنجاز</p>`,
+    `<button class="btn ghost" id="mCancel">إلغاء</button>
+     <button class="btn dark" id="mSave" disabled>حفظ السبب</button>`, false);
+  const ta = $('#mNote'), sv = $('#mSave'), rq = $('#mReq');
+  const upd = () => { const ok = !!ta.value.trim(); sv.disabled = !ok; rq.style.display = ok ? 'none' : 'flex'; };
+  ta.addEventListener('input', upd); upd(); ta.focus();
+  $('#mCancel').addEventListener('click', closeModal);
+  sv.addEventListener('click', () => { setCell(key, hid, { s:'miss', n: ta.value.trim() }); closeModal(); toast('سُجّل عدم الإنجاز مع السبب', 'x-circle'); });
+}
+function editNote(key, hid){
+  const h = habitById(hid), rec = (records[key] || {})[hid];
+  const has = !!(rec && rec.n), old = rec?.n || '';
+  showModal(
+    `<h3 class="m-title">${has ? 'تعديل الملاحظة' : 'إضافة ملاحظة'}</h3>
+     <p class="m-sub"><i class="ph ph-note-pencil"></i>${esc(h.name)} · ${dateAr(keyToDate(key))}</p>
+     <textarea id="mNote" rows="3" placeholder="ملاحظة اختيارية عن هذا اليوم…">${esc(old)}</textarea>`,
+    `<button class="btn ghost" id="mCancel">إلغاء</button>
+     <button class="btn dark" id="mSave">حفظ الملاحظة</button>`, true);
+  $('#mCancel').addEventListener('click', closeModal);
+  $('#mSave').addEventListener('click', () => {
+    const v = $('#mNote').value.trim();
+    const r = (records[key] || (records[key] = {}))[hid];
+    if(v) r.n = v; else delete r.n;
+    save(); refreshCell(key, hid); closeModal();
+    toast(has ? 'حُدّثت الملاحظة' : 'أُضيفت الملاحظة', 'note-pencil');
+  });
+}
+function showNoteModal(key, hid){
+  const h = habitById(hid), rec = (records[key] || {})[hid];
+  const pill = rec.s === 'done'
+    ? '<span class="pill ok"><i class="ph-fill ph-check"></i>عادة منجزة</span>'
+    : '<span class="pill bad"><i class="ph-fill ph-x"></i>غير منجزة</span>';
+  showModal(
+    `<h3 class="m-title">ملاحظة اليوم</h3>
+     <p class="m-sub"><i class="ph ph-calendar-blank"></i>${dateAr(keyToDate(key))}</p>
+     <div class="note-view">${esc(rec.n)}</div>
+     <div class="note-meta">${pill}<span class="h-mini"><span class="h-ic" style="width:30px;height:30px;font-size:15px;border-radius:9px"><i class="ph ph-${h.icon}"></i></span>${esc(h.name)}</span></div>`,
+    `<button class="btn ghost" id="mClose">إغلاق</button>
+     <button class="btn dark" id="mEdit">تعديل الملاحظة</button>`, true);
+  $('#mClose').addEventListener('click', closeModal);
+  $('#mEdit').addEventListener('click', () => editNote(key, hid));
+}
+function confirmModal(title, text, okLabel, onOk, danger = true){
+  showModal(
+    `<h3 class="m-title">${title}</h3><p class="m-text" style="margin-top:8px">${text}</p>`,
+    `<button class="btn ghost" id="cmNo">إلغاء</button>
+     <button class="btn ${danger ? 'danger' : 'dark'}" id="cmYes">${okLabel}</button>`, true);
+  $('#cmNo').addEventListener('click', closeModal);
+  $('#cmYes').addEventListener('click', () => { closeModal(); onOk(); });
+}
+function habitPopup(hid){
+  const h = habitById(hid); if(!h) return;
+  const p = habitPct(hid);
+  showModal(
+    `<div class="hb-pop">
+       <span class="h-ic xl"><i class="ph ph-${h.icon}"></i></span>
+       <h3 style="font-size:19px;font-weight:900">${esc(h.name)}</h3>
+       <p class="m-text" style="margin-top:6px">${esc(h.desc) || 'لا يوجد وصف لهذه العادة.'}</p>
+       <div class="hb-stat">
+         <div class="hb-row"><span>نسبة الالتزام منذ البداية</span><b>${p == null ? '—' : arNum(p) + '٪'}</b></div>
+         <div class="bar"><span style="width:${p || 0}%"></span></div>
+       </div>
+       <div class="hb-since"><i class="ph ph-calendar-blank"></i>أُضيفت في ${dateAr(new Date(h.createdAt || Date.now()))}</div>
+     </div>`,
+    `<button class="btn dark" id="mClose" style="width:100%">تم</button>`, true);
+  $('#mClose').addEventListener('click', closeModal);
+}
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ if(!ctx.hidden) closeCtx(); else if(modalOpen()) closeModal(); }
+});
+
+/* ==================== لوحة التحكم ==================== */
+function buildIconPick(){
+  $('#iconPick').innerHTML = ICONS.map(i =>
+    `<button type="button" data-ic="${i}" class="${i === selIcon ? 'sel' : ''}"><i class="ph ph-${i}"></i></button>`).join('');
+}
+ $('#iconPick').addEventListener('click', e => {
+  const b = e.target.closest('button[data-ic]'); if(!b) return;
+  selIcon = b.dataset.ic;
+  $$('#iconPick button').forEach(x => x.classList.toggle('sel', x.dataset.ic === selIcon));
+});
+function resetForm(){
+  editingHabitId = null; selIcon = 'dumbbell';
+  $('#fName').value = ''; $('#fDesc').value = '';
+  $('#formTitle').textContent = 'إضافة عادة جديدة';
+  $('#fSubmit').innerHTML = '<i class="ph ph-check"></i>إضافة العادة';
+  $('#fCancel').hidden = true;
+  buildIconPick();
+}
+ $('#fCancel').addEventListener('click', resetForm);
+ $('#hForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const name = $('#fName').value.trim(), desc = $('#fDesc').value.trim();
+  if(!name){ toast('اكتب اسم العادة أولاً', 'warning'); $('#fName').focus(); return; }
+  if(editingHabitId){
+    const h = habitById(editingHabitId);
+    h.name = name; h.desc = desc; h.icon = selIcon;
+    toast('حُدّثت العادة بنجاح');
+  }else{
+    habits.push({ id: 'h' + Date.now(), createdAt: Date.now(), name, desc, icon: selIcon });
+    toast('أُضيفت العادة بنجاح');
+  }
+  save(); resetForm(); renderHabitList();
+});
+function renderHabitList(){
+  const list = $('#hList');
+  $('#hCount').textContent = arNum(habits.length) + (habits.length === 1 ? ' عادة' : ' عادات');
+  if(!habits.length){
+    list.innerHTML = `<div class="empty"><i class="ph ph-sparkle"></i><p>لا توجد عادات بعد — أضف عادتك الأولى من النموذج المجاور.</p></div>`;
+    return;
+  }
+  list.innerHTML = habits.map(h => {
+    const p = habitPct(h.id);
+    return `<div class="hrow" data-id="${h.id}">
+      <span class="h-ic"><i class="ph ph-${h.icon}"></i></span>
+      <div class="h-meta"><b>${esc(h.name)}</b><small>${esc(h.desc) || 'بدون وصف'}</small></div>
+      <div class="h-stat"><div class="bar"><span style="width:${p || 0}%"></span></div><small>${p == null ? '—' : arNum(p) + '٪'}</small></div>
+      <div class="h-act">
+        <button type="button" class="ibtn edit" data-act="edit" data-tip="تعديل"><i class="ph ph-pencil-simple"></i></button>
+        <button type="button" class="ibtn del" data-act="del" data-tip="حذف"><i class="ph ph-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+ $('#hList').addEventListener('click', e => {
+  const btn = e.target.closest('.ibtn'); if(!btn) return;
+  const id = btn.closest('.hrow').dataset.id, h = habitById(id);
+  if(btn.dataset.act === 'edit'){
+    editingHabitId = id; selIcon = h.icon;
+    $('#fName').value = h.name; $('#fDesc').value = h.desc || '';
+    $('#formTitle').textContent = 'تعديل العادة';
+    $('#fSubmit').innerHTML = '<i class="ph ph-check"></i>حفظ التعديل';
+    $('#fCancel').hidden = false;
+    buildIconPick();
+    $('#hForm').scrollIntoView({ behavior:'smooth', block:'nearest' });
+    $('#fName').focus();
+  }else{
+    confirmModal('حذف العادة',
+      `سيتم حذف «${esc(h.name)}» وجميع سجلاتها وملاحظاتها نهائياً. لا يمكن التراجع عن هذا الإجراء.`,
+      'حذف نهائياً', () => {
+        habits = habits.filter(x => x.id !== id);
+        for(const key in records){ delete records[key][id]; if(!Object.keys(records[key]).length) delete records[key]; }
+        save(); renderHabitList(); toast('حُذفت العادة وسجلاتها', 'trash');
+      });
+  }
+});
+ $('#wipeBtn').addEventListener('click', () => {
+  confirmModal('إعادة تعيين التطبيق',
+    'سيتم مسح جميع العادات والسجلات والملاحظات نهائياً، ثم استعادة العادات الافتراضية مع بدء عدّ جديد من اليوم.',
+    'نعم، امسح كل شيء', () => {
+      seed(); resetForm(); renderHabitList(); toast('أُعيد تعيين التطبيق بالكامل', 'clock-counter-clockwise');
+    });
+});
+function renderAdmin(){ hideTip(); buildIconPick(); renderHabitList(); }
+
+/* ==================== التنبيهات (Toast) ==================== */
+function toast(msg, icon = 'check-circle'){
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<i class="ph-fill ph-${icon}"></i>${esc(msg)}`;
+  $('#toastRoot').appendChild(t);
+  requestAnimationFrame(() => t.classList.add('in'));
+  setTimeout(() => { t.classList.remove('in'); setTimeout(() => t.remove(), 320); }, 2300);
+}
+
+/* ==================== شاشة القفل ==================== */
+const lockScreen = $('#lockScreen'), lockCard = $('#lockCard');
+function tryUnlock(){
+  const v = $('#pwInput').value;
+  if(v === PASSWORD){
+    $('#lockErr').classList.remove('show');
+    lockCard.classList.add('ok');
+    $('#lockIcon').className = 'ph-fill ph-lock-key-open';
+    setAuth(true);
+    setTimeout(() => {
+      lockScreen.classList.add('out');
+      setTimeout(() => { lockScreen.hidden = true; enterApp(); }, 700);
+    }, 550);
+  }else{
+    lockCard.classList.add('shake');
+    $('#lockErr').classList.add('show');
+    setTimeout(() => lockCard.classList.remove('shake'), 520);
+    $('#pwInput').select();
+  }
+}
+ $('#lockBtn').addEventListener('click', tryUnlock);
+ $('#pwInput').addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
+ $('#pwToggle').addEventListener('click', () => {
+  const inp = $('#pwInput'), show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  $('#pwToggle i').className = show ? 'ph ph-eye-slash' : 'ph ph-eye';
+  inp.focus();
+});
+ $('#lockOutBtn').addEventListener('click', () => {
+  confirmModal('قفل التطبيق', 'هل تريد قفل الجلسة؟ ستحتاج إلى كلمة المرور للعودة مرة أخرى.', 'قفل الجلسة', () => {
+    setAuth(false);
+    $('#app').classList.remove('ready');
+    lockCard.classList.remove('ok');
+    $('#lockIcon').className = 'ph-fill ph-lock-key';
+    $('#pwInput').value = '';
+    lockScreen.hidden = false;
+    requestAnimationFrame(() => lockScreen.classList.remove('out'));
+  }, false);
+});
+function enterApp(){
+  $('#app').classList.add('ready');
+  requestAnimationFrame(() => { moveInd(); go('dashboard'); });
+}
+
+/* ==================== الإقلاع ==================== */
+load();
+if(authed){
+  lockScreen.hidden = true;
+  enterApp();
+}else{
+  setTimeout(() => $('#pwInput').focus(), 300);
+}
+</script>
+</body>
+</html>
