@@ -192,7 +192,7 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
 .card-head h2{font-size:15.5px; font-weight:800}
 .card-head h2 i{color:var(--cyan); margin-inline-end:6px}
 
-/* دليل الألوان: مربعات SVG ثابتة الحجم — يستحيل تمددها بنيوياً */
+/* دليل الألوان: مربعات SVG ثابتة الحجم */
 .legend{display:flex; gap:14px; flex-wrap:wrap; align-items:center}
 .lg{display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--slate)}
 .lg svg{flex:none; display:block}
@@ -780,11 +780,13 @@ function applySoundIcon(){ $('#soundBtn i').className = Sound.enabled ? 'ph ph-s
 
 /* ==================== الحالة والتخزين ==================== */
 const LS = { habits:'hzt_habits', records:'hzt_records', auth:'hzt_auth', start:'hzt_start' };
+const MIG_KEY = 'hzt_migrated';     /* علامة: هل اكتمل ترحيل العادات؟ (مرة واحدة فقط) */
+const MIG_VERSION = '2';
 const PASSWORD = 'mazen1.1';
 const ICONS = ['mosque','hands-praying','book-open','notebook','flower-lotus','shield-check','tooth','arrows-clockwise','microphone',
                'dumbbell','drop','moon-stars','code','heartbeat','brain','plant','sun','pen-nib',
                'bicycle','bowl-food','coffee','timer','medal','target','lightbulb','flame','puzzle-piece','chat-circle-text'];
-/* عاداتك التسع — بالنصوص التي أرسلتها */
+/* العادات الافتراضية — تُستخدم فقط عند أول تشغيل بلا بيانات، ولا تُفرض أبداً بعد ذلك */
 const DEFAULT_HABITS = [
   {name:'الصلاة في المسجد',           desc:'صلاة الصلوات الخمس كلها في المسجد.', icon:'mosque'},
   {name:'الصلاة على النبي (500 مرة)', desc:'الصلاة على محمد «صلى الله عليه وسلم» 500 مرة يومياً.', icon:'hands-praying'},
@@ -796,10 +798,9 @@ const DEFAULT_HABITS = [
   {name:'مراجعة دراسية',              desc:'مراجعة درس منهجي تمت مذاكرته سابقاً، او مراجعة قسم او وحدة كاملة او جزءاً معين.', icon:'arrows-clockwise'},
   {name:'تعلُّم التجويد',              desc:'تعلم يومياً معلومة تجويدة او اكثر من معلومة (حسب توفيق الله لي).', icon:'microphone'},
 ];
-/* القوائم الافتراضية القديمة — للترحيل التلقائي مع الحفاظ على العلامات */
+/* القوائم الافتراضية القديمة — للترحيل لمرة واحدة فقط مع الحفاظ على العلامات */
 const OLD7 = ['الصلاة في المسجد','الصلاة على النبي (500 مرة)','حفظ القرآن الكريم','متابعة درس منفذي','أذكار بعد الصلاة','التوقف','تمرين حسبية'];
 const OLD5 = ['قراءة ٢٠ صفحة','تمرين رياضي','شرب ٨ أكواب ماء','نوم مبكر','تعلّم وبرمجة'];
-const RENAMES = { 'متابعة درس منفذي':'دراسة درس منهجي', 'تمرين حسبية':'غسل الاسنان (مرتين)' };
 
 let habits = [], records = {}, startDateD = null, authed = false;
 let view = { y: today().getFullYear(), m: today().getMonth() };
@@ -828,43 +829,53 @@ function seed(){
   localStorage.setItem(LS.start, fmtKey(startDateD));
   habits = DEFAULT_HABITS.map((h,i) => ({ id:'h'+Date.now()+i, createdAt:Date.now(), ...h }));
   records = {};
+  localStorage.setItem(MIG_KEY, MIG_VERSION); /* مستخدم جديد: لا حاجة لأي ترحيل مستقبلاً */
   save();
 }
-/* الترحيل: تحديث القوائم الافتراضية القديمة إلى عاداتك التسع مع الحفاظ على العلامات */
+
+/* ================================================================
+   الترحيل — يعمل مرة واحدة فقط في العمر (محمي بعلامة إصدار).
+   بعد هذه المرة، لا يلمس التطبيق قائمة عاداتك إطلاقاً:
+   تعديلاتك وحذفك وإضافاتك تبقى محفوظة كما هي إلى الأبد.
+   ================================================================ */
 function migrate(){
+  /* إذا سبق أن اكتمل الترحيل: لا تفعل شيئاً إطلاقاً */
+  if(localStorage.getItem(MIG_KEY) === MIG_VERSION) return;
+
+  /* 1) إزالة أي تكرار متطابق بالاسم تماماً (من أخطاء الترحيلات السابقة)
+        — نحتفظ بالأقدم و نحذف المكرر وسجلاته. لمرة واحدة فقط. */
+  const seen = new Set();
+  const deduped = [];
+  habits.forEach(h => {
+    const key = (h.name || '').trim();
+    if(seen.has(key)) return;
+    seen.add(key);
+    deduped.push(h);
+  });
+  if(deduped.length !== habits.length){
+    const removedIds = habits.filter(h => !deduped.includes(h)).map(h => h.id);
+    habits = deduped;
+    for(const key in records){
+      removedIds.forEach(id => { delete records[key][id]; });
+      if(!Object.keys(records[key]).length) delete records[key];
+    }
+  }
+
+  /* 2) ترحيل القوائم الافتراضية القديمة إلى القائمة الحالية (مرة واحدة) */
   const names = habits.map(h => h.name);
   const isOld7 = names.length === OLD7.length && names.every((n,i) => n === OLD7[i]);
   const isOld5 = names.length === OLD5.length && names.every((n,i) => n === OLD5[i]);
   if(isOld7){
-    /* نفس الأسماء والترتيب للسبع الأولى → حدّثها في مكانها (تبقى المعرّفات والعلامات) */
     DEFAULT_HABITS.slice(0,7).forEach((d,i) => Object.assign(habits[i], d));
-    /* العادتان الجديدتان */
-    DEFAULT_HABITS.slice(7).forEach((d,i) =>
-      habits.push({ id:'h'+Date.now()+'n'+i, createdAt:Date.now(), ...d }));
-    save(); return;
-  }
-  if(isOld5){
+    DEFAULT_HABITS.slice(7).forEach((d,i) => habits.push({ id:'h'+Date.now()+'n'+i, createdAt:Date.now(), ...d }));
+  }else if(isOld5){
     const ids = habits.map(h => h.id);
-    habits = DEFAULT_HABITS.map((d,i) =>
-      ({ id: ids[i] || ('h'+Date.now()+'m'+i), createdAt: Date.now(), ...d }));
-    save(); return;
+    habits = DEFAULT_HABITS.map((d,i) => ({ id: ids[i] || ('h'+Date.now()+'m'+i), createdAt: Date.now(), ...d }));
   }
-  /* حالة عامة: مزامنة الاسم/الوصف/الأيقونة + إضافة أي عادة ناقصة */
-  let changed = false;
-  habits.forEach(h => {
-    const target = RENAMES[h.name] || h.name;
-    const d = DEFAULT_HABITS.find(x => x.name === target);
-    if(d && (h.name !== d.name || h.desc !== d.desc || h.icon !== d.icon)){
-      h.name = d.name; h.desc = d.desc; h.icon = d.icon; changed = true;
-    }
-  });
-  DEFAULT_HABITS.forEach((d,i) => {
-    if(!habits.some(h => h.name === d.name)){
-      habits.push({ id:'h'+Date.now()+'a'+i, createdAt:Date.now(), ...d });
-      changed = true;
-    }
-  });
-  if(changed) save();
+  /* لا يوجد أي منطق «إعادة إضافة الافتراضيات الناقصة» — هذا ما كان يسبب عودة المحذوفة */
+
+  localStorage.setItem(MIG_KEY, MIG_VERSION);
+  save();
 }
 
 /* ==================== منطق الأيام والنسب ==================== */
