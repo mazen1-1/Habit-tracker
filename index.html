@@ -192,19 +192,10 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
 .card-head h2{font-size:15.5px; font-weight:800}
 .card-head h2 i{color:var(--cyan); margin-inline-end:6px}
 
+/* دليل الألوان: مربعات SVG ثابتة الحجم — يستحيل تمددها بنيوياً */
 .legend{display:flex; gap:14px; flex-wrap:wrap; align-items:center}
 .lg{display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--slate)}
-.sw{
-  width:14px; height:14px;
-  min-width:14px; min-height:14px; max-width:14px; max-height:14px;
-  flex:none; display:inline-block;
-  border-radius:5px;
-}
-.sw.done{background:var(--cyan); box-shadow:0 3px 8px -2px rgba(14,165,233,.5)}
-.sw.miss{background:var(--ink)}
-.sw.empty{background:#EDF2F7}
-.sw.neutral{background:#E7EDF3; outline:1.5px dashed #C6D2DF; outline-offset:-2px}
-.sw.today{background:#fff; box-shadow:inset 0 0 0 2px #38BDF8}
+.lg svg{flex:none; display:block}
 
 /* ================== لوحة الإنجاز ================== */
 .alert-bar{
@@ -278,9 +269,7 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
 .map-legend{display:flex; gap:13px; flex-wrap:wrap; font-size:11px; font-weight:700; color:var(--slate)}
 .map-legend .d{width:11px; height:11px; border-radius:4px; display:inline-block; margin-inline-end:5px; vertical-align:-1px}
 
-/* ================== شبكة التتبع — جدول <table> كلاسيكي ==================
-   محرك الجداول يفرض أبعاد الخلية بنفسه: لا تمدد ممكن بنيوياً.
-   الفواصل بين المربعات مسافات بيضاء حقيقية عبر border-spacing. */
+/* ================== شبكة التتبع — جدول <table> كلاسيكي ================== */
 .track-card{
   padding:14px 18px 12px; border-radius:24px;
   background:linear-gradient(180deg,#FFFFFF,#FBFDFF);
@@ -295,9 +284,9 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
 .track-scroll::-webkit-scrollbar-track{background:transparent}
 .tg-table{
   border-collapse:separate;
-  border-spacing:5px;      /* الفجوة البيضاء الحقيقية بين المربعات */
-  margin-inline:auto;      /* توسيط الشبكة */
-  table-layout:fixed;      /* عرض الأعمدة مقفول من colgroup */
+  border-spacing:5px;
+  margin-inline:auto;
+  table-layout:fixed;
   --cell:34px;
 }
 .tg-table th, .tg-table td{
@@ -307,7 +296,6 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
   line-height:1.05;
 }
 .tg-hd{font-weight:normal; background:transparent}
-/* ترويسة الأيام */
 .tg-dow{user-select:none; position:relative; overflow:hidden}
 .tg-dow b{display:block; font-weight:800; font-size:calc(var(--cell)*.36); color:var(--slate)}
 .tg-dow span{display:block; font-weight:700; font-size:calc(var(--cell)*.24); color:#B6C2D2}
@@ -315,7 +303,6 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
 .tg-dow.today{background:var(--cyan-bg); border-radius:calc(var(--cell)*.24)}
 .tg-dow.today b{color:var(--cyan-d)}
 .tg-dow.today span{color:var(--cyan)}
-/* عمود أيقونات العادات */
 .tg-label{
   background:#F6F9FC;
   border-radius:calc(var(--cell)*.28);
@@ -324,7 +311,6 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
 .tg-label i{display:block; font-size:calc(var(--cell)*.52); color:#334155; transition:color .18s}
 .tg-label:hover{background:var(--cyan)}
 .tg-label:hover i{color:#fff}
-/* خلية اليوم: عرضها وارتفاعها مفروضان من الجدول + colgroup — مربع حتمي */
 .tg-cell{
   position:relative; user-select:none; overflow:hidden;
   border-radius:calc(var(--cell)*.24);
@@ -352,7 +338,6 @@ main{width:min(1240px, 100% - 40px); margin-inline:auto; padding:20px 0 30px}
   0%,35%{box-shadow:inset 0 0 0 2.5px var(--cyan), inset 0 0 14px rgba(14,165,233,.4)}
   100%{box-shadow:none}
 }
-/* صف النسب */
 .tg-sum{
   border-radius:calc(var(--cell)*.16);
   font-size:calc(var(--cell)*.3); font-weight:800;
@@ -610,9 +595,9 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
           <div class="card-head">
             <h2><i class="ph-fill ph-chart-bar"></i>الإنجاز اليومي خلال الشهر</h2>
             <div class="legend">
-              <span class="lg"><span class="sw" style="background:var(--cyan)"></span>مكتمل ١٠٠٪</span>
-              <span class="lg"><span class="sw" style="background:var(--ink)"></span>منجز جزئياً</span>
-              <span class="lg"><span class="sw" style="background:#D9E2EC"></span>لم يُسجّل</span>
+              <span class="lg"><svg width="13" height="13" viewBox="0 0 14 14"><rect width="14" height="14" rx="4" fill="#0EA5E9"/></svg>مكتمل ١٠٠٪</span>
+              <span class="lg"><svg width="13" height="13" viewBox="0 0 14 14"><rect width="14" height="14" rx="4" fill="#1E1E24"/></svg>منجز جزئياً</span>
+              <span class="lg"><svg width="13" height="13" viewBox="0 0 14 14"><rect width="14" height="14" rx="4" fill="#D9E2EC"/></svg>لم يُسجّل</span>
             </div>
           </div>
           <div class="chart-box">
@@ -659,15 +644,14 @@ input[type=text]:focus,textarea:focus{outline:none; border-color:var(--cyan); bo
       <div class="card track-card">
         <div class="track-head" id="trackHead">
           <div class="legend">
-            <span class="lg"><span class="sw done"></span>منجز</span>
-            <span class="lg"><span class="sw miss"></span>غير منجز</span>
-            <span class="lg"><span class="sw today"></span>يومك الحالي</span>
-            <span class="lg"><span class="sw empty"></span>بدون تسجيل</span>
-            <span class="lg"><span class="sw neutral"></span>محايد (قبل البدء)</span>
+            <span class="lg"><svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" rx="4" fill="#0EA5E9"/></svg>منجز</span>
+            <span class="lg"><svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" rx="4" fill="#1E1E24"/></svg>غير منجز</span>
+            <span class="lg"><svg width="14" height="14" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="3.5" fill="#FFFFFF" stroke="#38BDF8" stroke-width="2"/></svg>يومك الحالي</span>
+            <span class="lg"><svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" rx="4" fill="#EDF2F7"/></svg>بدون تسجيل</span>
+            <span class="lg"><svg width="14" height="14" viewBox="0 0 14 14"><rect x="0.8" y="0.8" width="12.4" height="12.4" rx="3.5" fill="#E7EDF3" stroke="#C6D2DF" stroke-width="1.2" stroke-dasharray="3 2"/></svg>محايد (قبل البدء)</span>
           </div>
           <span class="track-note"><i class="ph ph-hand-tap"></i>نقرة على المربع = قائمة اختيار الحالة · كليك يمين/ضغط مطوّل = القائمة نفسها · أيقونة العادة = تفاصيلها</span>
         </div>
-        <!-- الجدول يُبنى كاملاً بالجافاسكربت داخل هذا الحاوية -->
         <div class="track-scroll" id="trackScroll"></div>
         <div class="empty" id="trkEmpty" hidden>
           <i class="ph ph-sparkle"></i>
@@ -797,25 +781,31 @@ function applySoundIcon(){ $('#soundBtn i').className = Sound.enabled ? 'ph ph-s
 /* ==================== الحالة والتخزين ==================== */
 const LS = { habits:'hzt_habits', records:'hzt_records', auth:'hzt_auth', start:'hzt_start' };
 const PASSWORD = 'mazen1.1';
-const ICONS = ['dumbbell','book-open','drop','moon-stars','code','heartbeat','brain','plant','sun','pen-nib',
-               'bicycle','bowl-food','coffee','timer','medal','music-notes','person-simple-walk','shield-check',
-               'lightbulb','target','flame','gauge','puzzle-piece','chat-circle-text'];
+const ICONS = ['mosque','hands-praying','book-open','notebook','flower-lotus','shield-check','tooth','arrows-clockwise','microphone',
+               'dumbbell','drop','moon-stars','code','heartbeat','brain','plant','sun','pen-nib',
+               'bicycle','bowl-food','coffee','timer','medal','target','lightbulb','flame','puzzle-piece','chat-circle-text'];
+/* عاداتك التسع — بالنصوص التي أرسلتها */
 const DEFAULT_HABITS = [
-  {name:'الصلاة في المسجد',          desc:'صلاة المواقيت الخمس دائماً في المسجد.', icon:'person-simple-walk'},
-  {name:'الصلاة على النبي (500 مرة)', desc:'الصلاة على محمد «صلى الله عليه وسلم» 500 مرة يومياً.', icon:'target'},
-  {name:'حفظ القرآن الكريم',         desc:'حفظ يوميّ صفحة جديدة من القرآن الكريم ومراجعة صفحتين من المحفوظ.', icon:'book-open'},
-  {name:'متابعة درس منفذي',          desc:'متابعة درس واحد من المنهج الدراسي المقرر علينا يومياً.', icon:'puzzle-piece'},
-  {name:'أذكار بعد الصلاة',          desc:'الأذكار المخصوصة التي تُقال بعد الصلوات المفروضة.', icon:'plant'},
-  {name:'التوقف',                    desc:'', icon:'shield-check'},
-  {name:'تمرين حسبية',               desc:'عمل يومياً تمرين «طبل» للحساب — تكرار عدة مرات ومنتظم.', icon:'heartbeat'},
+  {name:'الصلاة في المسجد',           desc:'صلاة الصلوات الخمس كلها في المسجد.', icon:'mosque'},
+  {name:'الصلاة على النبي (500 مرة)', desc:'الصلاة على محمد «صلى الله عليه وسلم» 500 مرة يومياً.', icon:'hands-praying'},
+  {name:'حفظ القرآن الكريم',          desc:'حفظ يومي صفحة جديدة من القرآن الكريم ومراجعة صفحتين من المحفوظ.', icon:'book-open'},
+  {name:'دراسة درس منهجي',            desc:'مذاكرة درس واحد من المنهج الدراسي المقرر علي يومياً.', icon:'notebook'},
+  {name:'أذكار بعد الصلاة',           desc:'قول الأذكار المخصوصة التي تُقال بعد الصلوات المفروضة.', icon:'flower-lotus'},
+  {name:'التوقف',                     desc:'', icon:'shield-check'},
+  {name:'غسل الاسنان (مرتين)',        desc:'غسل الاسنان مرتين يومياً، مرة بعد الاستيقاظ (قبل الافطار او بعده بنصف ساعة) ومرة قبل النوم مباشرةً.', icon:'tooth'},
+  {name:'مراجعة دراسية',              desc:'مراجعة درس منهجي تمت مذاكرته سابقاً، او مراجعة قسم او وحدة كاملة او جزءاً معين.', icon:'arrows-clockwise'},
+  {name:'تعلُّم التجويد',              desc:'تعلم يومياً معلومة تجويدة او اكثر من معلومة (حسب توفيق الله لي).', icon:'microphone'},
 ];
-const OLD_DEFAULTS = ['قراءة ٢٠ صفحة','تمرين رياضي','شرب ٨ أكواب ماء','نوم مبكر','تعلّم وبرمجة'];
+/* القوائم الافتراضية القديمة — للترحيل التلقائي مع الحفاظ على العلامات */
+const OLD7 = ['الصلاة في المسجد','الصلاة على النبي (500 مرة)','حفظ القرآن الكريم','متابعة درس منفذي','أذكار بعد الصلاة','التوقف','تمرين حسبية'];
+const OLD5 = ['قراءة ٢٠ صفحة','تمرين رياضي','شرب ٨ أكواب ماء','نوم مبكر','تعلّم وبرمجة'];
+const RENAMES = { 'متابعة درس منفذي':'دراسة درس منهجي', 'تمرين حسبية':'غسل الاسنان (مرتين)' };
 
 let habits = [], records = {}, startDateD = null, authed = false;
 let view = { y: today().getFullYear(), m: today().getMonth() };
 let currentPage = 'dashboard';
 let rafId = null;
-let selIcon = 'dumbbell', editingHabitId = null;
+let selIcon = 'mosque', editingHabitId = null;
 let pendingFocusDay = null;
 
 function load(){
@@ -840,11 +830,41 @@ function seed(){
   records = {};
   save();
 }
+/* الترحيل: تحديث القوائم الافتراضية القديمة إلى عاداتك التسع مع الحفاظ على العلامات */
 function migrate(){
-  if(habits.length === OLD_DEFAULTS.length && habits.every((h,i) => h.name === OLD_DEFAULTS[i])){
-    DEFAULT_HABITS.forEach((d,i) => Object.assign(habits[i], d));
-    save();
+  const names = habits.map(h => h.name);
+  const isOld7 = names.length === OLD7.length && names.every((n,i) => n === OLD7[i]);
+  const isOld5 = names.length === OLD5.length && names.every((n,i) => n === OLD5[i]);
+  if(isOld7){
+    /* نفس الأسماء والترتيب للسبع الأولى → حدّثها في مكانها (تبقى المعرّفات والعلامات) */
+    DEFAULT_HABITS.slice(0,7).forEach((d,i) => Object.assign(habits[i], d));
+    /* العادتان الجديدتان */
+    DEFAULT_HABITS.slice(7).forEach((d,i) =>
+      habits.push({ id:'h'+Date.now()+'n'+i, createdAt:Date.now(), ...d }));
+    save(); return;
   }
+  if(isOld5){
+    const ids = habits.map(h => h.id);
+    habits = DEFAULT_HABITS.map((d,i) =>
+      ({ id: ids[i] || ('h'+Date.now()+'m'+i), createdAt: Date.now(), ...d }));
+    save(); return;
+  }
+  /* حالة عامة: مزامنة الاسم/الوصف/الأيقونة + إضافة أي عادة ناقصة */
+  let changed = false;
+  habits.forEach(h => {
+    const target = RENAMES[h.name] || h.name;
+    const d = DEFAULT_HABITS.find(x => x.name === target);
+    if(d && (h.name !== d.name || h.desc !== d.desc || h.icon !== d.icon)){
+      h.name = d.name; h.desc = d.desc; h.icon = d.icon; changed = true;
+    }
+  });
+  DEFAULT_HABITS.forEach((d,i) => {
+    if(!habits.some(h => h.name === d.name)){
+      habits.push({ id:'h'+Date.now()+'a'+i, createdAt:Date.now(), ...d });
+      changed = true;
+    }
+  });
+  if(changed) save();
 }
 
 /* ==================== منطق الأيام والنسب ==================== */
@@ -1111,7 +1131,7 @@ function renderChart(){
   });
 }
 
-/* ==================== شبكة التتبع — جدول <table> كلاسيكي ==================== */
+/* ==================== شبكة التتبع — جدول كلاسيكي ==================== */
 function cellInner(rec, st){
   const dot = rec && rec.n ? '<span class="note-dot"></span>' : '';
   let mark = '';
@@ -1140,18 +1160,15 @@ function refreshSum(key){
   td.textContent = txt;
 }
 
-/* ضلع المربع = الأصغر بين قيد العرض وقيد الارتفاع حتى أسفل الشاشة */
 function fitGrid(days){
   const scroller = $('#trackScroll');
-  const S = 5; /* تباعد الجدول border-spacing */
+  const S = 5;
   const availW = Math.max(300, scroller.clientWidth - 12);
   const label = availW < 700 ? 42 : 52;
-  /* عرض الجدول = label + days×cell + (days+1)×S  ≤  المتاح */
   const byW = Math.floor((availW - label - S * (days + 1)) / days);
   const rect = scroller.getBoundingClientRect();
   const top = Math.max(64, rect.top);
   const availH = Math.max(230, window.innerHeight - top - 20);
-  /* ارتفاع الجدول = (habits+1)×cell + 0.6×cell + (rows+1)×S  ≤  المتاح */
   const byH = Math.floor((availH - (habits.length + 3) * S) / (habits.length + 1.6));
   return { cell: Math.max(15, Math.min(byW, byH, 44)), label };
 }
@@ -1169,12 +1186,10 @@ function renderTracker(){
   const half = Math.max(12, Math.round(cell * 0.6));
   const showWd = cell >= 20;
 
-  /* بناء جدول كامل — محرك الجداول يفرض أبعاد الخلايا بنفسه */
   let html = `<table class="tg-table" style="--cell:${cell}px"><colgroup><col style="width:${label}px">`;
   for(let d = 0; d < last; d++) html += `<col style="width:${cell}px">`;
   html += '</colgroup>';
 
-  /* صف ترويسة الأيام */
   html += `<tr><th class="tg-hd" style="height:${cell}px" data-tip="أيقونة العادة"><i class="ph-fill ph-calendar-days" style="display:block;font-size:${Math.round(cell*.45)}px;color:var(--cyan)"></i></th>`;
   for(let d = 1; d <= last; d++){
     const dt = new Date(view.y, view.m, d), key = fmtKey(dt), st = keyStatus(key);
@@ -1182,7 +1197,6 @@ function renderTracker(){
   }
   html += '</tr>';
 
-  /* صفوف العادات */
   habits.forEach(h => {
     html += `<tr><th class="tg-hd tg-label" style="height:${cell}px" data-habit="${h.id}" data-tip="${esc(h.name)}"><i class="ph ph-${h.icon}"></i></th>`;
     for(let d = 1; d <= last; d++){
@@ -1194,7 +1208,6 @@ function renderTracker(){
     html += '</tr>';
   });
 
-  /* صف النسب */
   html += `<tr><th class="tg-hd" style="height:${half}px" data-tip="نسبة إنجاز كل يوم"><i class="ph-fill ph-percent" style="display:block;font-size:12px;color:var(--cyan)"></i></th>`;
   for(let d = 1; d <= last; d++){
     const key = fmtKey(new Date(view.y, view.m, d)), st = keyStatus(key), s = dayStats(key);
@@ -1226,7 +1239,6 @@ function clearCell(key, hid){
   save(); refreshCell(key, hid); refreshSum(key);
 }
 
-/* قائمة خيارات الخلية — للنقرة والكليك يمين والضغط المطوّل */
 function cellMenuItems(key, hid){
   const rec = (records[key] || {})[hid], st = keyStatus(key);
   const items = [];
@@ -1252,7 +1264,7 @@ function cellMenuItems(key, hid){
   return items;
 }
 
-/* --- أحداث الشبكة (على الحاوية الدائمة) --- */
+/* --- أحداث الشبكة --- */
 const trackScroll = $('#trackScroll');
 let lpTimer = null, lpFired = false;
 trackScroll.addEventListener('click', e => {
@@ -1422,7 +1434,7 @@ function buildIconPick(){
   $$('#iconPick button').forEach(x => x.classList.toggle('sel', x.dataset.ic === selIcon));
 });
 function resetForm(){
-  editingHabitId = null; selIcon = 'dumbbell';
+  editingHabitId = null; selIcon = 'mosque';
   $('#fName').value = ''; $('#fDesc').value = '';
   $('#formTitle').textContent = 'إضافة عادة جديدة';
   $('#fSubmit').innerHTML = '<i class="ph ph-check"></i>إضافة العادة';
